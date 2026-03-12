@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genia — Decision Simulator</title>
+<style>
+*,*:before,*:after{box-sizing:border-box;margin:0;padding:0}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --bg:#f5f7fa;--surface:#ffffff;--surface2:#f0f4f8;--border:#dde3ea;--border-light:#e8ecf0;
+  --text:#1a2535;--text-muted:#5a7080;--text-dim:#8fa3b0;
+  --accent:#0077cc;--accent-dark:#005fa3;--accent-light:rgba(0,119,204,0.09);
+  --good:#16a34a;--warn:#d97706;--bad:#dc2626;
+  --good-bg:rgba(22,163,74,0.08);--warn-bg:rgba(217,119,6,0.08);--bad-bg:rgba(220,38,38,0.08);
+  --radius:6px;--shadow:0 1px 4px rgba(0,0,0,.08);
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;font-size:14px}
+
+.app{min-height:100vh}
+.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+.app-header h1{font-size:1.15rem;font-weight:700;letter-spacing:-.01em;color:var(--text)}
+.subtitle{font-size:.78rem;color:var(--text-muted);margin-top:2px;letter-spacing:.01em}
+.header-right{display:flex;align-items:center;gap:8px}
+.badge{font-size:.62rem;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.6px}
+.badge-blue{background:var(--accent-light);color:var(--accent)}
+.badge-green{background:var(--good-bg);color:var(--good)}
+.badge-warn{background:var(--warn-bg);color:var(--warn)}
+.badge-red{background:var(--bad-bg);color:var(--bad)}
+.badge-gray{background:rgba(255,255,255,.06);color:var(--text-muted)}
+
+/* Tabs */
+.tab-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex}
+.tab-btn{padding:10px 16px;font-size:.8rem;font-weight:600;color:var(--text-muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;transition:color .15s,border-color .15s;letter-spacing:.01em}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Layout */
+.app-layout{display:flex;min-height:calc(100vh - 97px)}
+.sidebar{width:288px;min-width:288px;background:var(--surface);border-right:1px solid var(--border);padding:18px 16px;overflow-y:auto;flex-shrink:0}
+.main-content{flex:1;padding:22px 28px;overflow-x:auto;min-width:0}
+
+/* Sidebar */
+.section-title{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text-dim);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--border)}
+.section-title:first-child{margin-top:0;padding-top:0;border-top:none}
+.slider-row{margin-bottom:13px}
+.slider-label{display:flex;justify-content:space-between;font-size:.8rem;font-weight:500;margin-bottom:5px;color:var(--text-muted)}
+.slider-value{font-weight:600;color:var(--accent)}
+.slider{width:100%;height:3px;-webkit-appearance:none;appearance:none;background:var(--border-light);border-radius:2px;outline:none;cursor:pointer}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 2px var(--accent-dark)}
+.slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff}
+.slider-hint{font-size:.67rem;color:var(--text-dim);margin-top:3px}
+
+/* Fixed cost display */
+.fixed-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px}
+.fixed-row-label{font-size:.78rem;color:var(--text-muted)}
+.fixed-row-val{font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:5px}
+.lock-icon{font-size:.65rem;opacity:.4}
+
+/* Resource cards */
+.resource-card{border:1px solid var(--border);border-radius:var(--radius);padding:9px 11px;margin-bottom:6px;cursor:pointer;transition:all .15s;position:relative;background:var(--surface2)}
+.resource-card:hover{border-color:var(--accent-dark)}
+.resource-card.selected{border-color:var(--accent);background:var(--accent-light)}
+.resource-card.selected::after{content:'✓';position:absolute;right:10px;top:9px;font-weight:700;color:var(--accent);font-size:.85rem}
+.rc-name{font-size:.83rem;font-weight:600;margin-bottom:2px;color:var(--text)}
+.rc-detail{font-size:.7rem;color:var(--text-muted);line-height:1.4}
+.rc-price{font-size:.76rem;font-weight:600;color:var(--text-muted);margin-top:4px}
+
+/* Toggle */
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)}
+.toggle-lbl{font-size:.8rem;font-weight:500;color:var(--text)}
+.toggle-sub{font-size:.68rem;color:var(--text-dim)}
+.toggle{position:relative;width:32px;height:18px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.ttrack{position:absolute;inset:0;background:#c8d6e0;border-radius:10px;cursor:pointer;transition:background .2s}
+.toggle input:checked+.ttrack{background:var(--accent)}
+.ttrack::after{content:'';position:absolute;left:2px;top:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.toggle input:checked+.ttrack::after{left:16px}
+
+/* Panels */
+.panel{display:none}
+.panel.active{display:block}
+
+/* Page section */
+.page-section{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--border);color:var(--text-muted)}
+.page-section+.page-section{margin-top:24px}
+
+/* Decisions */
+.decisions-intro{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:18px}
+.decisions-intro h2{font-size:.95rem;font-weight:700;margin-bottom:3px;color:var(--text)}
+.decisions-intro p{font-size:.78rem;color:var(--text-muted);line-height:1.5}
+
+.decision-item{display:flex;gap:12px;align-items:flex-start;padding:13px 15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:7px;cursor:pointer;transition:all .15s;border-left:3px solid var(--border)}
+.decision-item:hover{border-color:var(--accent-dark);border-left-color:var(--accent);background:var(--surface2)}
+.d-num{font-size:1rem;font-weight:700;color:var(--accent);min-width:20px;line-height:1.3;flex-shrink:0}
+.d-body{flex:1}
+.d-title{font-size:.85rem;font-weight:600;margin-bottom:3px;color:var(--text)}
+.d-desc{font-size:.76rem;color:var(--text-muted);line-height:1.55}
+.d-cta{font-size:.7rem;color:var(--accent);font-weight:600;margin-top:5px;letter-spacing:.02em}
+.d-sub-questions{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.d-sq{font-size:.74rem;color:var(--text-muted);padding-left:4px;line-height:1.5}
+
+/* Metrics */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 14px}
+.card-label{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);margin-bottom:4px}
+.card-value{font-size:1.25rem;font-weight:700;color:var(--text)}
+.card-sub{font-size:.68rem;color:var(--text-muted);margin-top:2px}
+.val-good{color:var(--good)}.val-warn{color:var(--warn)}.val-bad{color:var(--bad)}.val-accent{color:var(--accent)}.val-muted{color:var(--text-dim)}
+
+/* Verdict */
+.verdict{display:flex;align-items:center;gap:16px;padding:13px 17px;border-radius:var(--radius);border:1px solid;margin-bottom:18px}
+.verdict.go{background:var(--good-bg);border-color:rgba(34,197,94,.3)}
+.verdict.caution{background:var(--warn-bg);border-color:rgba(245,158,11,.3)}
+.verdict.stop{background:var(--bad-bg);border-color:rgba(239,68,68,.3)}
+.verdict-icon{font-size:1.4rem;flex-shrink:0}
+.verdict-body{flex:1;font-size:.8rem;line-height:1.5;color:var(--text)}
+.verdict-body strong{display:block;font-size:.87rem;margin-bottom:2px}
+.verdict-pct{font-size:1.7rem;font-weight:700;flex-shrink:0}
+
+/* Waterfall table */
+.wf-table{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:18px}
+.wf-table th{text-align:left;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);padding:7px 11px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.wf-table td{padding:7px 11px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text)}
+.wf-table tr:hover td{background:var(--surface2)}
+.wf-table .row-grand td{font-weight:700;font-size:.9rem;border-top:1px solid var(--accent);background:var(--accent-light)}
+.td-r{text-align:right;white-space:nowrap}
+.td-neg{color:var(--bad)}.td-pos{color:var(--good)}.td-dim{color:var(--text-muted);font-style:italic}
+.bar-wrap{width:110px;height:6px;background:var(--border-light);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle}
+.bar-fill{height:100%;border-radius:2px;transition:width .4s}
+
+/* Monthly table */
+.mo-table{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:18px}
+.mo-table th{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);padding:7px 11px;border-bottom:1px solid var(--border);background:var(--surface2);text-align:right}
+.mo-table th:first-child{text-align:left}
+.mo-table td{padding:7px 11px;border-bottom:1px solid var(--border);text-align:right;color:var(--text)}
+.mo-table td:first-child{text-align:left;font-weight:500}
+.mo-table tr:hover td{background:var(--surface2)}
+.mo-table .row-total td{font-weight:700;border-top:1px solid var(--border);background:var(--surface2)}
+
+/* Risk table */
+.risk-table{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:18px}
+.risk-table th{text-align:left;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);padding:7px 11px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.risk-table td{padding:8px 11px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5;color:var(--text)}
+.risk-table tr:last-child td{border-bottom:none}
+.risk-name{font-weight:600}.risk-impact{font-size:.7rem;color:var(--text-muted);margin-top:1px}
+
+/* Actions */
+.action-item{display:flex;gap:13px;align-items:flex-start;padding:13px 15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;border-left:3px solid var(--border)}
+.action-item.urgent{border-left-color:var(--bad)}
+.action-item.important{border-left-color:var(--warn)}
+.action-item.normal{border-left-color:var(--accent)}
+.action-num{font-size:1.1rem;font-weight:700;color:var(--accent);min-width:20px;line-height:1.2;flex-shrink:0}
+.action-body{flex:1}
+.action-title{font-size:.85rem;font-weight:600;margin-bottom:4px;color:var(--text)}
+.action-detail{font-size:.76rem;color:var(--text-muted);line-height:1.6}
+.action-meta{display:flex;gap:7px;margin-top:7px;flex-wrap:wrap}
+.meta-owner{font-size:.67rem;font-weight:700;color:var(--accent);background:var(--accent-light);padding:2px 8px;border-radius:3px;letter-spacing:.02em}
+.meta-when{font-size:.67rem;font-weight:700;color:var(--warn);background:var(--warn-bg);padding:2px 8px;border-radius:3px}
+
+/* Info notes */
+.info-note{font-size:.7rem;color:var(--text-muted);background:var(--surface2);padding:8px 11px;border-radius:var(--radius);border-left:3px solid var(--accent);margin-bottom:11px;line-height:1.5}
+.warn-note{font-size:.7rem;color:var(--warn);background:var(--warn-bg);padding:8px 11px;border-radius:var(--radius);border-left:3px solid var(--warn);margin-bottom:11px;line-height:1.5}
+
+/* Sensitivity box */
+.sensitivity-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;margin-bottom:18px;font-size:.8rem;line-height:1.9;color:var(--text-muted)}
+
+/* Schedule controls */
+.radio-group{display:flex}
+.radio-lbl{display:flex;align-items:center;gap:6px;font-size:.78rem;cursor:pointer;padding:5px 12px;border:1px solid var(--border);background:var(--surface2);margin-right:-1px;transition:all .15s;font-weight:600;color:var(--text-muted)}
+.radio-lbl:first-child{border-radius:5px 0 0 5px}
+.radio-lbl:last-child{border-radius:0 5px 5px 0}
+.radio-lbl.active{background:var(--accent);color:#fff;border-color:var(--accent);z-index:1}
+.radio-lbl input{display:none}
+.mode-o{color:var(--good)}.mode-r{color:var(--text-muted)}.mode-p{color:var(--bad)}
+.radio-lbl.active .mode-o,.radio-lbl.active .mode-r,.radio-lbl.active .mode-p{color:#fff}
+.btn-stepper{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);font-size:1rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1;color:var(--text)}
+.btn-stepper:hover:not(:disabled){background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.btn-stepper:disabled{opacity:.25;cursor:not-allowed}
+.eng-count{font-size:.95rem;font-weight:700;min-width:20px;text-align:center;color:var(--text)}
+.sched-controls{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.sc-grp{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text-muted)}
+
+/* RACI */
+.raci-table{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:8px}
+.raci-table th{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);padding:7px 11px;border-bottom:1px solid var(--border);background:var(--surface2);text-align:center}
+.raci-table th:first-child{text-align:left}
+.raci-table td{padding:7px 11px;border-bottom:1px solid var(--border);text-align:center;color:var(--text)}
+.raci-table td:first-child{text-align:left;font-weight:500}
+.raci-table tr:hover td{background:var(--surface2)}
+.rR{font-weight:700;color:var(--accent)}.rA{font-weight:700;color:var(--bad)}.rC{color:var(--warn)}.rI{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="app-header">
+  <div>
+    <h1>Genia &mdash; Decision Simulator</h1>
+    <div class="subtitle">@Elevate · Transat · Q2 2026 · 4 decisions to make this week</div>
+  </div>
+  <div class="header-right">
+    <span class="badge badge-blue">Live Model</span>
+    <span id="hdr-badge" class="badge badge-green">24% margin</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('decisions',this)">① Decisions</button>
+  <button class="tab-btn" onclick="switchTab('margin',this)">② Margin Model</button>
+  <button class="tab-btn" onclick="switchTab('actions',this)">③ Action Plan</button>
+</div>
+
+<div class="app-layout">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+
+  <div class="section-title">Revenue</div>
+  <div class="slider-row">
+    <div class="slider-label"><span>Transat contract</span><span class="slider-value" id="lbl-transat">$275,000</span></div>
+    <input class="slider" type="range" min="200000" max="350000" step="5000" value="275000" oninput="sv('transat',this.value)">
+    <div class="slider-hint">Fixed-price · currently in legal review</div>
+  </div>
+  <div class="slider-row">
+    <div class="slider-label"><span>Other projects (4 mo)</span><span class="slider-value" id="lbl-other">$75,000</span></div>
+    <input class="slider" type="range" min="0" max="200000" step="5000" value="75000" oninput="sv('other',this.value)">
+    <div class="slider-hint">Oligo + other mandates · floor $75k · ceiling $150k</div>
+  </div>
+
+  <div class="section-title">Technical Delivery</div>
+  <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px">Who builds @Elevate?</div>
+
+  <div class="resource-card selected" id="rc-matt" onclick="selectTech('matt')">
+    <div class="rc-name">Matt / Mavric</div>
+    <div class="rc-detail">External agency · Full delivery · Brings own team · Wrote the brief</div>
+    <div class="rc-price" id="matt-card-price">Subcontract: $140,000</div>
+  </div>
+  <div class="resource-card" id="rc-vlead" onclick="selectTech('vlead')">
+    <div class="rc-name">Vincent as Tech Lead</div>
+    <div class="rc-detail">Fractional lead managing Eddy &amp; Danielle · ~35h/wk · $120/hr fixed rate</div>
+    <div class="rc-price">~$67,200 over 4 months</div>
+  </div>
+  <div class="resource-card" id="rc-hire" onclick="selectTech('hire')">
+    <div class="rc-name">New Full-Time Hire</div>
+    <div class="rc-detail">6–10 wk ramp · Risky for timeline · Bridge needed</div>
+    <div class="rc-price">~$100–130k/yr prorated</div>
+  </div>
+
+  <div id="matt-slider" class="slider-row" style="margin-top:10px">
+    <div class="slider-label"><span>Matt's subcontract price</span><span class="slider-value" id="lbl-matt">$140,000</span></div>
+    <input class="slider" type="range" min="60000" max="220000" step="5000" value="140000" oninput="sv('matt',this.value)">
+    <div class="slider-hint">Key variable — number not confirmed yet</div>
+  </div>
+
+  <div class="section-title">Vincent — Fractional Bridge</div>
+  <div class="toggle-row">
+    <div><div class="toggle-lbl">Hire Vincent as fractional bridge</div><div class="toggle-sub">8–20 hrs/week · Non-Transat support</div></div>
+    <label class="toggle"><input type="checkbox" checked onchange="sv('useVincent',this.checked)"><div class="ttrack"></div></label>
+  </div>
+  <div id="vincent-wrap" style="margin-top:8px">
+    <div class="slider-row">
+      <div class="slider-label"><span>Hours / week</span><span class="slider-value" id="lbl-vhrs">12 hrs</span></div>
+      <input class="slider" type="range" min="8" max="20" step="1" value="12" oninput="sv('vhrs',this.value)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-label"><span>Hourly rate</span><span class="slider-value" id="lbl-vrate">$120/hr</span></div>
+      <input class="slider" type="range" min="80" max="160" step="5" value="120" oninput="sv('vrate',this.value)">
+      <div class="slider-hint">TBD — rate for fractional AI support role</div>
+    </div>
+    <div class="slider-row">
+      <div class="slider-label"><span>Duration</span><span class="slider-value" id="lbl-vmo">4 months</span></div>
+      <input class="slider" type="range" min="1" max="6" step="1" value="4" oninput="sv('vmo',this.value)">
+    </div>
+  </div>
+
+  <div class="section-title">PM Support</div>
+  <div class="toggle-row">
+    <div><div class="toggle-lbl">Add a project manager</div><div class="toggle-sub">Internal or external · Monthly cost</div></div>
+    <label class="toggle"><input type="checkbox" onchange="sv('usePM',this.checked)"><div class="ttrack"></div></label>
+  </div>
+  <div id="pm-wrap" style="margin-top:8px;opacity:.4;pointer-events:none">
+    <div class="slider-row">
+      <div class="slider-label"><span>Monthly cost</span><span class="slider-value" id="lbl-pmrate">$5,000/mo</span></div>
+      <input class="slider" type="range" min="2000" max="15000" step="500" value="5000" oninput="sv('pmrate',this.value)">
+      <div class="slider-hint">Internal resource or external contractor</div>
+    </div>
+    <div class="slider-row">
+      <div class="slider-label"><span>Duration</span><span class="slider-value" id="lbl-pmmo">4 months</span></div>
+      <input class="slider" type="range" min="1" max="6" step="1" value="4" oninput="sv('pmmo',this.value)">
+    </div>
+  </div>
+
+  <div class="section-title">Timeline</div>
+  <div class="slider-row">
+    <div class="slider-label"><span>Project duration</span><span class="slider-value" id="lbl-months">4 months</span></div>
+    <input class="slider" type="range" min="3" max="6" step="1" value="4" oninput="sv('months',this.value)">
+  </div>
+
+  <div class="section-title">Fixed Costs</div>
+  <div style="font-size:.67rem;color:var(--text-dim);margin-bottom:8px;line-height:1.5">Locked — shown for model transparency.</div>
+  <div class="fixed-row">
+    <span class="fixed-row-label">Intégral overhead / mo</span>
+    <span class="fixed-row-val">$20,000 <span class="lock-icon">🔒</span></span>
+  </div>
+  <div class="fixed-row">
+    <span class="fixed-row-label">Overhead total (project)</span>
+    <span class="fixed-row-val" id="lbl-overhead-total">$80,000</span>
+  </div>
+  <div class="fixed-row">
+    <span class="fixed-row-label">Moshe commission</span>
+    <span class="fixed-row-val">15% of Transat <span class="lock-icon">🔒</span></span>
+  </div>
+  <div class="fixed-row">
+    <span class="fixed-row-label">Moshe total</span>
+    <span class="fixed-row-val" id="lbl-moshe">$41,250</span>
+  </div>
+
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main-content">
+
+  <!-- PANEL: DECISIONS -->
+  <div class="panel active" id="panel-decisions">
+    <div class="decisions-intro">
+      <h2>@Elevate — 3 Decisions to Align On</h2>
+      <p>Decisions 1 and 2 feed directly into the margin model. Decision 3 shapes how the team actually operates together day-to-day.</p>
+    </div>
+
+    <div class="decision-item" onclick="switchTabByName('margin')">
+      <div class="d-num">1</div>
+      <div class="d-body">
+        <div class="d-title">Who delivers @Elevate technically, and at what price?</div>
+        <div class="d-desc">Matt / Mavric is the lead candidate — wrote the engineering brief and brings a dedicated team. Finalizing his subcontract price is the last open variable before the project structure is confirmed. Use the sidebar to model different price scenarios and see the impact on margin.</div>
+        <div class="d-cta">→ See impact in Margin Model</div>
+      </div>
+    </div>
+
+    <div class="decision-item" onclick="switchTabByName('margin')">
+      <div class="d-num">2</div>
+      <div class="d-body">
+        <div class="d-title">Do we bring Vincent in as a fractional technical bridge?</div>
+        <div class="d-desc">Victor exits March 13th. Margaux has a scope brief ready defining Vincent's role: dev unblocking, client-facing technical support, feasibility assessments, and ad-hoc development. Toggle Vincent on/off in the sidebar to see the cost impact alongside Decision 1.</div>
+        <div class="d-cta">→ See impact in Margin Model</div>
+      </div>
+    </div>
+
+    <div class="decision-item">
+      <div class="d-num">3</div>
+      <div class="d-body">
+        <div class="d-title">How do we work together efficiently as a team?</div>
+        <div class="d-desc">With Matt external, Vincent fractional, Moshe in an advisory role, and Margaux coordinating day-to-day — this team spans different contexts and schedules. We need to align on the operating rhythm: a shared Slack channel, check-in cadence, in-person touchpoints, and who owns what communication with Transat. What does good look like for each of us?</div>
+        <div class="d-sub-questions">
+          <div class="d-sq">→ Shared Slack channel — who's in, what's the protocol?</div>
+          <div class="d-sq">→ Weekly sync — do we meet as a full team, or bilaterally?</div>
+          <div class="d-sq">→ In-person frequency — kickoff only, or recurring?</div>
+          <div class="d-sq">→ Transat-facing communication — single point of contact or distributed?</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" style="margin-top:28px">Live Snapshot</div>
+    <div class="summary-grid" id="snap-metrics"></div>
+    <div class="sensitivity-box" id="snap-sensitivity"></div>
+  </div>
+
+  <!-- PANEL: MARGIN -->
+  <div class="panel" id="panel-margin">
+    <div id="verdict-block"></div>
+
+    <div class="page-section">Margin Waterfall</div>
+    <table class="wf-table" id="wf-table"></table>
+
+    <div class="page-section">Monthly Cashflow</div>
+    <table class="mo-table" id="mo-table"></table>
+
+    <div class="page-section">Risk Register</div>
+    <table class="risk-table">
+      <thead><tr><th style="width:28%">Risk</th><th style="width:10%">Level</th><th>Mitigation</th><th style="width:20%">Owner · Deadline</th></tr></thead>
+      <tbody>
+        <tr><td><div class="risk-name">Technical subcontract scope misalignment</div><div class="risk-impact">Cost overruns compress project margin</div></td><td><span class="badge badge-red">Critical</span></td><td>Align subcontract scope and price with Matt before any formal RFP. Ensure fixed-price terms and clear change order triggers are in the contract.</td><td style="font-weight:600;color:var(--bad)">Alex · This week</td></tr>
+        <tr><td><div class="risk-name">Transat IT / security delay (2–6 wks)</div><div class="risk-impact">Pushes delivery past contract window</div></td><td><span class="badge badge-red">High</span></td><td>Start immediately — Margaux identifies IT contact and submits request this week, before kickoff.</td><td style="font-weight:600;color:var(--bad)">Margaux · Today</td></tr>
+        <tr><td><div class="risk-name">Victor exits March 13 — bridge needed</div><div class="risk-impact">Technical continuity risk during transition</div></td><td><span class="badge badge-warn">High</span></td><td>Onboard Vincent before March 13 for overlap. Brief is ready. Start date March 10 for 3 days of parallel handoff.</td><td style="font-weight:600;color:var(--warn)">Alex · Before Mar 13</td></tr>
+        <tr><td><div class="risk-name">Moov AI API not ready at kickoff</div><div class="risk-impact">Blocks 60–70% of the build</div></td><td><span class="badge badge-warn">Medium</span></td><td>Matt's brief includes mock API strategy. Confirm Moov AI timeline at first checkpoint. Add clause to subcontract.</td><td style="font-weight:600;color:var(--warn)">Margaux + Matt · Wk 1</td></tr>
+        <tr><td><div class="risk-name">Other projects stay at floor</div><div class="risk-impact">Reduces buffer — model still viable</div></td><td><span class="badge badge-green">Low</span></td><td>Project economics hold at the revenue floor. Continue business development in parallel to grow the buffer.</td><td style="color:var(--good)">Alex</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PANEL: ACTIONS -->
+  <div class="panel" id="panel-actions">
+
+    <div class="page-section">Immediate Actions — Next 7 Days</div>
+
+    <div class="action-item urgent">
+      <div class="action-num">1</div>
+      <div class="action-body">
+        <div class="action-title">Get Matt's pricing before issuing a formal RFP</div>
+        <div class="action-detail">Confirm the technical delivery budget range with Matt / Mavric before a formal brief goes out. This ensures the subcontract scope and the project budget are aligned before either side formalizes commitments.</div>
+        <div class="action-meta"><span class="meta-owner">Alex</span><span class="meta-when">This week</span></div>
+      </div>
+    </div>
+
+    <div class="action-item urgent">
+      <div class="action-num">2</div>
+      <div class="action-body">
+        <div class="action-title">Onboard Vincent before March 13th — use Margaux's brief as scope</div>
+        <div class="action-detail">Margaux's scope doc (4 tasks: dev unblocking, client-facing tech, feasibility assessments, ad-hoc dev) is ready to use as the engagement terms. Start date March 10 for 3 days of overlap with Victor before his exit on March 13.</div>
+        <div class="action-meta"><span class="meta-owner">Alex + Margaux</span><span class="meta-when">Before March 13</span></div>
+      </div>
+    </div>
+
+    <div class="action-item urgent">
+      <div class="action-num">3</div>
+      <div class="action-body">
+        <div class="action-title">Start Transat IT tenant access process — today</div>
+        <div class="action-detail">Teams bot admin approval: 1–2 weeks. Security review: 2–4 weeks. Both are critical path. Neither is in your control once submitted. Margaux identifies the IT contact and initiates this week — before any other prep work.</div>
+        <div class="action-meta"><span class="meta-owner">Margaux</span><span class="meta-when">Today / Tomorrow</span></div>
+      </div>
+    </div>
+
+    <div class="action-item important">
+      <div class="action-num">4</div>
+      <div class="action-body">
+        <div class="action-title">Define Matt's subcontract with hard out-of-scope clauses</div>
+        <div class="action-detail">Genia is on a fixed price — Matt's contract needs to match. Key clauses: Moov AI delays out of scope, Transat IT delays out of scope, IP ownership to Genia, explicit change order triggers. Don't sign until airtight.</div>
+        <div class="action-meta"><span class="meta-owner">Alex + Legal</span><span class="meta-when">Before signing Matt</span></div>
+      </div>
+    </div>
+
+    <div class="action-item normal">
+      <div class="action-num">5</div>
+      <div class="action-body">
+        <div class="action-title">Open the full-time Tech Lead search this month</div>
+        <div class="action-detail">Vincent is a bridge, not a permanent solution. A senior hire takes 6–10 weeks minimum. Start the pipeline now so you have a candidate by Month 2 of Transat. Have Vincent participate in technical screening.</div>
+        <div class="action-meta"><span class="meta-owner">Alex + Margaux</span><span class="meta-when">This month</span></div>
+      </div>
+    </div>
+
+    <div class="page-section" style="margin-top:28px">RACI — Transat @Elevate Delivery</div>
+    <table class="raci-table">
+      <thead><tr><th style="text-align:left;width:36%">Responsibility</th><th>Alex</th><th>Margaux</th><th>Matt</th><th>Vincent</th><th>Moshe</th></tr></thead>
+      <tbody>
+        <tr><td>Transat client relationship</td><td class="rR">R/A</td><td class="rC">C</td><td class="rI">I</td><td>—</td><td class="rC">C</td></tr>
+        <tr><td>AI strategy &amp; consulting</td><td class="rR">R/A</td><td class="rI">I</td><td class="rI">I</td><td class="rC">C</td><td class="rR">R</td></tr>
+        <tr><td>Day-to-day project management</td><td class="rA">A</td><td class="rR">R</td><td class="rC">C</td><td class="rI">I</td><td>—</td></tr>
+        <tr><td>Technical delivery (@Elevate build)</td><td class="rA">A</td><td class="rI">I</td><td class="rR">R</td><td class="rC">C</td><td>—</td></tr>
+        <tr><td>Transat IT / security coordination</td><td class="rI">I</td><td class="rR">R/A</td><td class="rC">C</td><td class="rC">C</td><td>—</td></tr>
+        <tr><td>Eddy &amp; Danielle oversight</td><td>—</td><td class="rA">A</td><td>—</td><td class="rR">R</td><td>—</td></tr>
+        <tr><td>Technical feasibility (other clients)</td><td class="rI">I</td><td class="rA">A</td><td>—</td><td class="rR">R</td><td>—</td></tr>
+        <tr><td>Sales — Transat Phase 2+</td><td class="rR">R/A</td><td class="rC">C</td><td>—</td><td>—</td><td class="rC">C</td></tr>
+      </tbody>
+    </table>
+    <div class="info-note">R = Responsible · A = Accountable · C = Consulted · I = Informed</div>
+  </div>
+
+</div><!-- /main-content -->
+</div><!-- /app-layout -->
+</div><!-- /app -->
+
+<script>
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+const S = {
+  transat: 275000, other: 75000,
+  techChoice: 'matt', matt: 140000,
+  useVincent: true, vhrs: 12, vrate: 120, vmo: 4,
+  usePM: false, pmrate: 5000, pmmo: 4,
+  months: 4,
+  // FIXED — not adjustable
+  OVERHEAD_MO: 20000,   // Intégral overhead incl. Margaux's salary
+  MOSHE_PCT: 0.15,
+};
+
+const fmt  = n => '$' + Math.round(n).toLocaleString('en-CA');
+const fmtP = n => (Math.round(n*10)/10) + '%';
+
+// ══════════════════════════════════════════
+// COMPUTE
+// ══════════════════════════════════════════
+function compute() {
+  const revenue = S.transat + S.other;
+  const moshe   = S.transat * S.MOSHE_PCT;
+  const overhead = S.OVERHEAD_MO * S.months;
+
+  let techCost;
+  if      (S.techChoice==='matt')  techCost = S.matt;
+  else if (S.techChoice==='vlead') techCost = 120 * 35 * 4 * S.months; // $120/hr × ~35h/wk full lead
+  else                              techCost = (115000/12) * S.months;
+
+  const vincentCost = (S.useVincent && S.techChoice==='matt')
+    ? S.vrate * S.vhrs * 4 * S.vmo : 0;
+
+  const pmCost = S.usePM ? S.pmrate * S.pmmo : 0;
+
+  const totalCosts = techCost + moshe + overhead + vincentCost + pmCost;
+  const net = revenue - totalCosts;
+  const pct = (net / revenue) * 100;
+  return { revenue, techCost, moshe, overhead, vincentCost, pmCost, totalCosts, net, pct };
+}
+
+// ══════════════════════════════════════════
+// SIDEBAR UPDATER
+// ══════════════════════════════════════════
+function sv(key, val) {
+  if (key==='useVincent') {
+    S.useVincent = !!val;
+    const w = document.getElementById('vincent-wrap');
+    w.style.opacity = val ? '1' : '0.4';
+    w.style.pointerEvents = val ? 'auto' : 'none';
+  } else if (key==='usePM') {
+    S.usePM = !!val;
+    const w = document.getElementById('pm-wrap');
+    w.style.opacity = val ? '1' : '0.4';
+    w.style.pointerEvents = val ? 'auto' : 'none';
+  } else {
+    S[key] = parseFloat(val);
+  }
+  const lbls = {
+    transat: v=>fmt(v), other: v=>fmt(v), matt: v=>fmt(v),
+    vhrs: v=>v+' hrs', vrate: v=>'$'+v+'/hr', vmo: v=>v+' months',
+    pmrate: v=>fmt(v)+'/mo', pmmo: v=>v+' months',
+    months: v=>v+' months',
+  };
+  if (lbls[key]) { const el=document.getElementById('lbl-'+key); if(el) el.textContent=lbls[key](val); }
+  if (key==='matt') document.getElementById('matt-card-price').textContent='Subcontract: '+fmt(val);
+  // Update fixed-cost display labels that depend on months/transat
+  document.getElementById('lbl-moshe').textContent = fmt(S.transat * S.MOSHE_PCT);
+  document.getElementById('lbl-overhead-total').textContent = fmt(S.OVERHEAD_MO * S.months);
+  renderAll();
+}
+
+function selectTech(c) {
+  S.techChoice = c;
+  ['matt','vlead','hire'].forEach(k => document.getElementById('rc-'+k).classList.toggle('selected', k===c));
+  document.getElementById('matt-slider').style.display = c==='matt' ? 'block' : 'none';
+  renderAll();
+}
+
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+function switchTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+function switchTabByName(name) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  const btn = document.querySelector(`.tab-btn[onclick*="'${name}'"]`);
+  if (btn) btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════
+// RENDER ALL
+// ══════════════════════════════════════════
+function renderAll() {
+  const m = compute();
+  // Header badge
+  const hb = document.getElementById('hdr-badge');
+  hb.textContent = fmtP(m.pct)+' margin';
+  hb.className = 'badge '+(m.pct>=35?'badge-green':m.pct>=20?'badge-warn':'badge-red');
+  // Panels
+  renderSnap(m); renderVerdict(m); renderWaterfall(m); renderMonthTable(m);
+}
+
+// ── Snapshot ──
+function renderSnap(m) {
+  const cls = m.pct>=35?'val-good':m.pct>=20?'val-warn':'val-bad';
+  document.getElementById('snap-metrics').innerHTML = `
+    <div class="summary-card"><div class="card-label">Total Revenue</div><div class="card-value val-accent">${fmt(m.revenue)}</div><div class="card-sub">${fmt(S.transat)} Transat + ${fmt(S.other)} other</div></div>
+    <div class="summary-card"><div class="card-label">Total Costs</div><div class="card-value val-bad">${fmt(m.totalCosts)}</div><div class="card-sub">All-in over ${S.months} months</div></div>
+    <div class="summary-card"><div class="card-label">Net Margin</div><div class="card-value ${cls}">${fmt(m.net)}</div><div class="card-sub">${fmtP(m.pct)} of revenue</div></div>
+    <div class="summary-card"><div class="card-label">Monthly Net</div><div class="card-value ${cls}">${fmt(m.net/S.months)}/mo</div><div class="card-sub">Average over ${S.months} months</div></div>`;
+
+  const lines = [];
+  if (S.techChoice==='matt') {
+    lines.push(`→ <strong>Matt / Mavric subcontract:</strong> ${fmt(S.matt)} &mdash; adjust slider to model scenarios`);
+    if (S.matt > (m.revenue - m.moshe - m.overhead - m.vincentCost) * 0.9)
+      lines.push(`→ <span style="color:var(--bad)">Subcontract cost leaves minimal margin buffer — consider scenario planning</span>`);
+  }
+  if (S.useVincent && S.techChoice==='matt')
+    lines.push(`→ <strong>Vincent fractional:</strong> ${fmt(m.vincentCost)} total (${S.vhrs}h/wk × $${S.vrate}/hr × ${S.vmo} mo)`);
+  if (S.usePM)
+    lines.push(`→ <strong>PM support:</strong> ${fmt(m.pmCost)} total ($${S.pmrate.toLocaleString('en-CA')}/mo × ${S.pmmo} mo)`);
+  lines.push(`→ <strong>Moshe (fixed 15%):</strong> ${fmt(m.moshe)} — ${fmtP(m.moshe/m.revenue*100)} of revenue`);
+  lines.push(`→ <strong>Overhead:</strong> ${fmt(m.overhead)} ($${S.OVERHEAD_MO.toLocaleString('en-CA')}/mo × ${S.months} mo)`);
+  if (m.pct<20 && m.pct>=0) lines.push(`→ <span style="color:var(--warn)">Margin below 20% — adjust inputs to explore scenarios that improve the structure.</span>`);
+  if (m.pct<0) lines.push(`→ <span style="color:var(--bad)"><strong>Negative margin at current inputs.</strong> Adjust revenue or cost assumptions.</span>`);
+  document.getElementById('snap-sensitivity').innerHTML = lines.join('<br>');
+}
+
+// ── Verdict ──
+function renderVerdict(m) {
+  const techLabel = S.techChoice==='matt'?'Matt / Mavric':S.techChoice==='vlead'?'Vincent as Lead':'New Hire';
+  let cls,icon,title,body;
+  if (m.pct>=35){cls='go';icon='✅';title='Viable — proceed with confidence';body=`${fmtP(m.pct)} net margin with ${techLabel}. The project structure works financially.`;}
+  else if (m.pct>=20){cls='caution';icon='⚠️';title='Proceed with caution';body=`${fmtP(m.pct)} net margin — workable if costs stay controlled. Confirm subcontract scope before committing.`;}
+  else if (m.pct>=0){cls='caution';icon='🟠';title='Marginal — review assumptions';body=`${fmtP(m.pct)} net margin. Consider adjusting inputs — revenue upside or lower technical delivery cost.`;}
+  else{cls='stop';icon='🔴';title='Not viable at current inputs';body=`Negative margin of ${fmtP(Math.abs(m.pct))}. Adjust revenue or cost assumptions to find a viable structure.`;}
+  const pctColor = m.pct>=35?'var(--good)':m.pct>=20?'var(--warn)':'var(--bad)';
+  document.getElementById('verdict-block').innerHTML=`
+    <div class="verdict ${cls}">
+      <div class="verdict-icon">${icon}</div>
+      <div class="verdict-body"><strong>${title}</strong>${body}</div>
+      <div class="verdict-pct" style="color:${pctColor}">${fmtP(m.pct)}</div>
+    </div>`;
+}
+
+// ── Waterfall ──
+function renderWaterfall(m) {
+  const techLabel = S.techChoice==='matt'?'Matt / Mavric (subcontract)':S.techChoice==='vlead'?'Vincent as Tech Lead':'New Full-Time Hire';
+  const maxBar = m.revenue;
+  const bar = (amt, color) => `<span class="bar-wrap"><span class="bar-fill" style="width:${Math.min(Math.abs(amt)/maxBar*100,100)}%;background:${color}"></span></span>`;
+
+  const rows = [
+    {label:'Total Revenue', amt:m.revenue, cls:'td-pos', color:'#22c55e'},
+    {label:techLabel, amt:-m.techCost, cls:'td-neg', color:'#ef4444'},
+    {label:'Moshe commission (15% — fixed)', amt:-m.moshe, cls:'td-neg td-dim', color:'#f59e0b'},
+    {label:'Intégral overhead incl. Margaux ('+S.months+' mo — fixed)', amt:-m.overhead, cls:'td-neg td-dim', color:'#f59e0b'},
+  ];
+  if (S.useVincent && S.techChoice==='matt') rows.push({label:'Vincent fractional ('+S.vmo+' mo)', amt:-m.vincentCost, cls:'td-neg', color:'#dc2626'});
+  if (S.usePM) rows.push({label:'PM support ('+S.pmmo+' mo)', amt:-m.pmCost, cls:'td-neg', color:'#dc2626'});
+
+  const netColor = m.net>=0?'#16a34a':'#dc2626';
+  let html = `<thead><tr><th>Line Item</th><th></th><th class="td-r">Amount</th></tr></thead><tbody>`;
+  for (const r of rows) html += `<tr><td>${r.label}</td><td>${bar(r.amt,r.color)}</td><td class="td-r ${r.cls}">${fmt(Math.abs(r.amt))}</td></tr>`;
+  html += `<tr class="row-grand"><td><strong>Net Margin</strong></td><td>${bar(m.net,netColor)}</td><td class="td-r" style="font-size:.95rem;color:${netColor};font-weight:700">${fmt(m.net)} <span style="font-size:.78rem;font-weight:400">(${fmtP(m.pct)})</span></td></tr></tbody>`;
+  document.getElementById('wf-table').innerHTML = html;
+}
+
+// ── Monthly cashflow ──
+function renderMonthTable(m) {
+  const tMo=S.transat/S.months, oMo=S.other/S.months, techMo=m.techCost/S.months;
+  const mosheMo=m.moshe/S.months, ovMo=S.OVERHEAD_MO;
+  const vincMo=(S.useVincent&&S.techChoice==='matt')?S.vrate*S.vhrs*4:0;
+  const pmMo=S.usePM?S.pmrate:0;
+  const cols=Array.from({length:S.months},(_,i)=>'Mo '+(i+1));
+
+  let html=`<thead><tr><th>Item</th>${cols.map(c=>`<th>${c}</th>`).join('')}<th>Total</th></tr></thead><tbody>`;
+  const rows=[
+    {label:'Revenue',fn:()=>tMo+oMo,cls:'td-pos'},
+    {label:'Tech cost',fn:()=>-techMo,cls:'td-neg'},
+    {label:'Moshe (fixed)',fn:()=>-mosheMo,cls:'td-neg td-dim'},
+    {label:'Overhead incl. Margaux (fixed)',fn:()=>-ovMo,cls:'td-neg td-dim'},
+  ];
+  if (S.useVincent&&S.techChoice==='matt') rows.push({label:'Vincent',fn:(i)=>i<S.vmo?-vincMo:0,cls:'td-neg'});
+  if (S.usePM) rows.push({label:'PM support',fn:(i)=>i<S.pmmo?-pmMo:0,cls:'td-neg'});
+
+  for (const r of rows) {
+    const vals=Array.from({length:S.months},(_,i)=>typeof r.fn==='function'?r.fn(i):r.fn());
+    const tot=vals.reduce((a,b)=>a+b,0);
+    html+=`<tr><td>${r.label}</td>${vals.map(v=>`<td class="${r.cls}">${fmt(Math.abs(v))}</td>`).join('')}<td class="${r.cls}" style="font-weight:600">${fmt(Math.abs(tot))}</td></tr>`;
+  }
+  const nets=Array.from({length:S.months},(_,i)=>{
+    const rev=tMo+oMo;
+    const cost=techMo+mosheMo+ovMo
+      +(S.useVincent&&S.techChoice==='matt'&&i<S.vmo?vincMo:0)
+      +(S.usePM&&i<S.pmmo?pmMo:0);
+    return rev-cost;
+  });
+  const totNet=nets.reduce((a,b)=>a+b,0);
+  html+=`<tr class="row-total"><td>Net Margin</td>${nets.map(n=>`<td class="${n>=0?'td-pos':'td-neg'}" style="font-weight:600">${fmt(n)}</td>`).join('')}<td class="${totNet>=0?'td-pos':'td-neg'}" style="font-weight:700">${fmt(totNet)}</td></tr></tbody>`;
+  document.getElementById('mo-table').innerHTML=html;
+}
+
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+renderAll();
+</script>
+</body>
+</html>
