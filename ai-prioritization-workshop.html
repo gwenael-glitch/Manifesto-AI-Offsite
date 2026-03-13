@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intégral · AI Transformation — Prioritization Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F6F5F3;--bg-white:#ffffff;--text:#36454F;--text-dark:#1a1a1a;
+  --text-muted:#5A6A78;--text-dim:#7A8A96;--border:#E5E2DD;
+  --border-hover:#CCC8C1;--radius:12px;--radius-sm:8px;--radius-pill:100px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.07),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.09),0 1px 3px rgba(0,0,0,0.04);
+  --font:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
+}
+html{font-size:16px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ─── HEADER ─────────────────────────────────────────────── */
+.page-header{
+  background:rgba(246,245,243,0.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:1rem 2rem;
+  position:sticky;top:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap
+}
+.header-left h1{font-size:1rem;font-weight:700;color:var(--text-dark);letter-spacing:-0.02em}
+.header-left p{font-size:0.68rem;color:var(--text-muted);margin-top:0.12rem}
+.header-summary{display:flex;gap:0.45rem;flex-wrap:wrap;align-items:center}
+.summary-pill{font-size:0.67rem;font-weight:600;padding:0.22rem 0.6rem;border-radius:var(--radius-pill)}
+.sp-p1{background:#ECFDF5;color:#059669}
+.sp-p2{background:#FFFBEB;color:#D97706}
+.sp-discuss{background:#F0F0EF;color:#5A6A78;border:1px solid var(--border)}
+.sp-kill{background:#FEF2F2;color:#DC2626}
+
+/* ─── METHODOLOGY BANNER ──────────────────────────────────── */
+.methodology{
+  background:var(--bg-white);border-bottom:1px solid var(--border);
+  padding:0;overflow:hidden;
+}
+.method-toggle{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:0.8rem 2rem;cursor:pointer;border:none;background:none;
+  font-family:var(--font);text-align:left;
+}
+.method-toggle:hover{background:#F0F0EF}
+.method-toggle-label{font-size:0.8rem;font-weight:600;color:var(--text-dark);display:flex;align-items:center;gap:0.5rem}
+.method-toggle-label svg{color:#6366F1}
+.method-toggle-arrow{font-size:0.7rem;color:var(--text-muted);transition:transform 0.2s}
+.method-toggle-arrow.open{transform:rotate(180deg)}
+.method-body{
+  display:none;padding:1.2rem 2rem 1.5rem;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;
+  border-top:1px solid var(--border);
+}
+.method-body.hidden{display:none!important}
+.method-section h3{font-size:0.75rem;font-weight:700;color:var(--text-dark);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.05em}
+.method-section p{font-size:0.75rem;color:var(--text-muted);line-height:1.55}
+.method-scores{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.4rem}
+.method-score-row{display:flex;align-items:center;gap:0.5rem;font-size:0.72rem}
+.method-score-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.method-thresholds{display:flex;flex-direction:column;gap:0.4rem;margin-top:0.4rem}
+.method-thresh{display:flex;align-items:center;gap:0.5rem}
+.method-thresh-pill{font-size:0.65rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:var(--radius-pill);white-space:nowrap}
+
+/* ─── FILTER BAR ──────────────────────────────────────────── */
+.filter-bar{
+  background:rgba(246,245,243,0.97);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);padding:0.6rem 2rem;
+  display:flex;gap:0.35rem;flex-wrap:wrap;align-items:center;
+  position:sticky;top:57px;z-index:150
+}
+.filter-btn{
+  font-size:0.7rem;font-weight:600;padding:0.3rem 0.75rem;border-radius:var(--radius-pill);
+  border:1.5px solid var(--border);background:var(--bg-white);color:var(--text-muted);
+  cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:var(--font)
+}
+.filter-btn:hover{border-color:var(--border-hover);color:var(--text-dark)}
+.filter-btn.active{background:var(--text-dark);color:#fff;border-color:var(--text-dark)}
+.filter-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.filter-hint{margin-left:auto;font-size:0.65rem;color:var(--text-dim);display:flex;align-items:center;gap:0.3rem}
+.drag-icon{font-size:0.75rem}
+
+/* ─── BOARD ───────────────────────────────────────────────── */
+.board-wrap{overflow-x:auto;padding:1.5rem 1rem;min-height:calc(100vh - 130px)}
+.board{display:grid;grid-template-columns:repeat(4,minmax(300px,1fr));gap:1rem;min-width:1100px;align-items:start}
+
+/* ─── COLUMN ──────────────────────────────────────────────── */
+.board-col{
+  background:var(--bg-white);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);overflow:hidden;
+  transition:box-shadow 0.15s;
+}
+.board-col.drag-over{box-shadow:0 0 0 2px #6366F1,var(--shadow-md)}
+.col-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.75rem 1rem;
+}
+.col-header-left{display:flex;align-items:center;gap:0.5rem}
+.col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.col-title{font-size:0.72rem;font-weight:700;letter-spacing:0.02em;text-transform:uppercase}
+.col-count{font-size:0.7rem;font-weight:700;padding:0.18rem 0.55rem;border-radius:var(--radius-pill)}
+.col-body{
+  padding:0.75rem;display:flex;flex-direction:column;gap:0.6rem;
+  min-height:80px;transition:background 0.15s;
+}
+.col-body.drag-active{background:rgba(99,102,241,0.04)}
+
+/* ─── DROP PLACEHOLDER ─────────────────────────────────────── */
+.drop-placeholder{
+  display:none;border:2px dashed #6366F1;border-radius:var(--radius-sm);
+  padding:1rem;text-align:center;font-size:0.72rem;font-weight:600;
+  color:#6366F1;background:#EEF2FF;margin-top:0.25rem
+}
+.col-body.drag-active .drop-placeholder{display:block}
+
+/* ─── CARD ────────────────────────────────────────────────── */
+.card{
+  background:var(--bg-white);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:0.75rem;
+  box-shadow:var(--shadow-sm);cursor:grab;
+  transition:box-shadow 0.15s,transform 0.15s,opacity 0.15s;
+  user-select:none;
+}
+.card:hover{box-shadow:var(--shadow-md);border-color:var(--border-hover);transform:translateY(-1px)}
+.card.dragging{opacity:0.4;cursor:grabbing;transform:rotate(1.5deg);box-shadow:var(--shadow-md)}
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem}
+.card-cat{font-size:0.6rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:var(--radius-pill)}
+.card-id{font-size:0.6rem;color:var(--text-dim);font-weight:500}
+.card-title{font-size:0.8rem;font-weight:700;color:var(--text-dark);line-height:1.3;margin-bottom:0.35rem}
+.card-desc{font-size:0.68rem;color:var(--text-muted);line-height:1.45;margin-bottom:0.5rem}
+.card-votes{display:flex;flex-direction:column;gap:0.18rem;margin-bottom:0.45rem}
+.vote-row{display:flex;align-items:center;gap:0.4rem}
+.vote-label{font-size:0.6rem;font-weight:600;width:60px;flex-shrink:0}
+.vote-bar-wrap{flex:1;height:4px;background:#F0F0EF;border-radius:2px;overflow:hidden}
+.vote-bar-fill{height:100%;border-radius:2px;transition:width 0.3s}
+.vote-count{font-size:0.6rem;color:var(--text-dim);width:12px;text-align:right;flex-shrink:0}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:0.4rem;border-top:1px solid var(--border)}
+.card-score{font-size:0.63rem;font-weight:600;color:var(--text-muted)}
+.card-total{font-size:0.6rem;color:var(--text-dim)}
+
+/* ─── HIDDEN (filter) ─────────────────────────────────────── */
+.card.hidden{display:none}
+
+/* ─── CHANGED BADGE ───────────────────────────────────────── */
+.card.moved::after{
+  content:"moved";position:absolute;top:4px;right:4px;
+  font-size:0.55rem;font-weight:700;background:#6366F1;color:#fff;
+  padding:0.1rem 0.35rem;border-radius:var(--radius-pill)
+}
+.card{position:relative}
+
+/* ─── RESET BUTTON ────────────────────────────────────────── */
+.reset-btn{
+  font-size:0.68rem;font-weight:600;padding:0.28rem 0.75rem;
+  border-radius:var(--radius-pill);border:1.5px solid var(--border);
+  background:var(--bg-white);color:var(--text-muted);cursor:pointer;
+  font-family:var(--font);transition:all 0.15s
+}
+.reset-btn:hover{background:#FEF2F2;color:#DC2626;border-color:#FCA5A5}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────────────────────── -->
+<header class="page-header">
+  <div class="header-left">
+    <h1>Intégral · AI Transformation — Prioritization Workshop</h1>
+    <p>9 respondents · 42 initiatives · Cards are draggable — move them between columns in real time</p>
+  </div>
+  <div class="header-summary">
+    <span class="summary-pill sp-p1" id="pill-p1">P1 Do Now · 20</span>
+    <span class="summary-pill sp-p2" id="pill-p2">P2 Plan Next · 15</span>
+    <span class="summary-pill sp-discuss" id="pill-discuss">Discuss · 7</span>
+    <span class="summary-pill sp-kill" id="pill-kill">Kill · 0</span>
+    <button class="reset-btn" id="resetBtn" onclick="resetBoard()">↺ Reset</button>
+  </div>
+</header>
+
+<!-- ── METHODOLOGY ─────────────────────────────────────────── -->
+<section class="methodology">
+  <button class="method-toggle" onclick="toggleMethod(this)" aria-expanded="false">
+    <span class="method-toggle-label">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      How were initiatives prioritized?
+    </span>
+    <span class="method-toggle-arrow">▼</span>
+  </button>
+  <div class="method-body hidden" id="methodBody">
+    <div class="method-section">
+      <h3>Survey Design</h3>
+      <p>9 leadership team members scored each of the 42 initiatives across 5 priority levels. Each vote was translated into a weighted score to capture urgency and consensus simultaneously.</p>
+      <div class="method-scores">
+        <div class="method-score-row"><span class="method-score-dot" style="background:#059669"></span><strong>ASAP</strong> = 4 pts — do in days/weeks</div>
+        <div class="method-score-row"><span class="method-score-dot" style="background:#2563EB"></span><strong>Next 6 months</strong> = 3 pts</div>
+        <div class="method-score-row"><span class="method-score-dot" style="background:#7C3AED"></span><strong>6–12 months</strong> = 2 pts</div>
+        <div class="method-score-row"><span class="method-score-dot" style="background:#D97706"></span><strong>2027+</strong> = 1 pt</div>
+        <div class="method-score-row"><span class="method-score-dot" style="background:#DC2626"></span><strong>Wouldn't do</strong> = 0 pts</div>
+      </div>
+    </div>
+    <div class="method-section">
+      <h3>Column Thresholds</h3>
+      <p>Each initiative's average weighted score (max 4.0) determines its column. Initiatives with 3+ "Wouldn't do" votes are automatically sent to Kill, regardless of score.</p>
+      <div class="method-thresholds">
+        <div class="method-thresh">
+          <span class="method-thresh-pill" style="background:#ECFDF5;color:#059669">P1 Do Now</span>
+          <span style="font-size:0.72rem;color:var(--text-muted)">Score ≥ 3.0 · Strong urgency + consensus</span>
+        </div>
+        <div class="method-thresh">
+          <span class="method-thresh-pill" style="background:#FFFBEB;color:#D97706">P2 Plan Next</span>
+          <span style="font-size:0.72rem;color:var(--text-muted)">Score 2.5–2.99 · Valued but not urgent</span>
+        </div>
+        <div class="method-thresh">
+          <span class="method-thresh-pill" style="background:#F0F0EF;color:#5A6A78">Discuss</span>
+          <span style="font-size:0.72rem;color:var(--text-muted)">Score &lt; 2.5 · Split opinion — needs debate</span>
+        </div>
+        <div class="method-thresh">
+          <span class="method-thresh-pill" style="background:#FEF2F2;color:#DC2626">Kill</span>
+          <span style="font-size:0.72rem;color:var(--text-muted)">3+ "Wouldn't do" votes · Remove from roadmap</span>
+        </div>
+      </div>
+    </div>
+    <div class="method-section">
+      <h3>Drag &amp; Drop</h3>
+      <p>This board is fully interactive. Drag any card to a different column to override the data-driven classification. Changes are tracked in real time — moved cards show a purple "moved" badge. Use the <strong>↺ Reset</strong> button in the header to restore the original classification.</p>
+      <p style="margin-top:0.5rem">Cards marked <strong>Discuss</strong> are the most important for your workshop: they represent split opinions that need explicit leadership alignment before entering the roadmap.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FILTER BAR ────────────────────────────────────────────── -->
+<nav class="filter-bar">
+  <button class="filter-btn active" onclick="filter('all', this)">All</button>
+  <button class="filter-btn" onclick="filter('tech', this)"><span class="filter-dot" style="background:#3B82F6"></span>Infrastructure &amp; Tech</button>
+  <button class="filter-btn" onclick="filter('people', this)"><span class="filter-dot" style="background:#10B981"></span>Talent &amp; Culture</button>
+  <button class="filter-btn" onclick="filter('tools', this)"><span class="filter-dot" style="background:#F59E0B"></span>Tools &amp; Workflows</button>
+  <button class="filter-btn" onclick="filter('business', this)"><span class="filter-dot" style="background:#A855F7"></span>Business &amp; Revenue</button>
+  <button class="filter-btn" onclick="filter('claude', this)"><span class="filter-dot" style="background:#EC4899"></span>Claude Code</button>
+  <span class="filter-hint"><span class="drag-icon">⠿</span> Drag cards between columns</span>
+</nav>
+
+<!-- ── BOARD ──────────────────────────────────────────────────── -->
+<main class="board-wrap">
+  <div class="board" id="board">
+    <div class="board-col" data-zone="p1">
+  <div class="col-header" style="background:#ECFDF5;border-bottom:2px solid #059669">
+    <div class="col-header-left">
+      <span class="col-dot" style="background:#059669"></span>
+      <span class="col-title" style="color:#059669">Priority 1 — Do Now</span>
+    </div>
+    <span class="col-count" style="background:#05966920;color:#059669" data-zone-count="p1">20</span>
+  </div>
+  <div class="col-body" id="zone-p1">
+    <div class="card" draggable="true" data-id="Q2" data-zone="p1" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q2</span>
+  </div>
+  <div class="card-title">Connect top 5 data sources</div>
+  <div class="card-desc">Google Ads, Search Console, GA4, CRM, ClickUp — une couche de données unifiée.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:78%;background:#059669"></div>
+          </div>
+          <span class="vote-count">7</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.78 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q42" data-zone="p1" data-cat="claude">
+  <div class="card-top">
+    <span class="card-cat" style="background:#EC489920;color:#EC4899">Claude Code</span>
+    <span class="card-id">Q42</span>
+  </div>
+  <div class="card-title">Designate internal Claude Code lead</div>
+  <div class="card-desc">Mandat 90 jours : former 5 collègues, documenter 3 workflows, présenter à la direction.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:78%;background:#059669"></div>
+          </div>
+          <span class="vote-count">7</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.78 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q4" data-zone="p1" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q4</span>
+  </div>
+  <div class="card-title">Name the AI technical owner</div>
+  <div class="card-desc">Mandat écrit, KPIs définis, redevabilité directe à la direction.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:67%;background:#059669"></div>
+          </div>
+          <span class="vote-count">6</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.67 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q13" data-zone="p1" data-cat="people">
+  <div class="card-top">
+    <span class="card-cat" style="background:#10B98120;color:#10B981">Talent & Culture</span>
+    <span class="card-id">Q13</span>
+  </div>
+  <div class="card-title">AI proficiency required for all new hires</div>
+  <div class="card-desc">Étape d'évaluation IA dans le processus. Aucune exception, peu importe le rôle.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:78%;background:#059669"></div>
+          </div>
+          <span class="vote-count">7</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.44 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q34" data-zone="p1" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q34</span>
+  </div>
+  <div class="card-title">Host monthly Marketing × AI events</div>
+  <div class="card-desc">1er événement organisé, 3 prochains mois planifiés, format documenté.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#059669"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.44 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q41" data-zone="p1" data-cat="claude">
+  <div class="card-top">
+    <span class="card-cat" style="background:#EC489920;color:#EC4899">Claude Code</span>
+    <span class="card-id">Q41</span>
+  </div>
+  <div class="card-title">Document 5 Claude Code use cases</div>
+  <div class="card-desc">Un par domaine (SEO, contenu, Ads, reporting, ops) dans la bibliothèque.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#059669"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.44 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q1" data-zone="p1" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q1</span>
+  </div>
+  <div class="card-title">Deploy Brain on a real client</div>
+  <div class="card-desc">Pas une démo — un prototype fonctionnel qui génère de vrais livrables.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#059669"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.33 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q9" data-zone="p1" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q9</span>
+  </div>
+  <div class="card-title">Set monthly AI infrastructure budget</div>
+  <div class="card-desc">Ligne budgétaire distincte, plafond approuvé par la direction.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:67%;background:#059669"></div>
+          </div>
+          <span class="vote-count">6</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.33 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q15" data-zone="p1" data-cat="people">
+  <div class="card-top">
+    <span class="card-cat" style="background:#10B98120;color:#10B981">Talent & Culture</span>
+    <span class="card-id">Q15</span>
+  </div>
+  <div class="card-title">Add AI question to every performance review</div>
+  <div class="card-desc">«Quel workflow IA as-tu construit ce trimestre et quel est le résultat mesurable?»</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:67%;background:#059669"></div>
+          </div>
+          <span class="vote-count">6</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.33 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q3" data-zone="p1" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q3</span>
+  </div>
+  <div class="card-title">Audit & consolidate all workflows</div>
+  <div class="card-desc">Un espace partagé documenté. Automations dispersées archivées ou supprimées.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.22 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q38" data-zone="p1" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q38</span>
+  </div>
+  <div class="card-title">Publish new Intégral positioning</div>
+  <div class="card-desc">Document existant, chaque employé l'a lu, reflété sur le site et les decks.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.22 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q40" data-zone="p1" data-cat="claude">
+  <div class="card-top">
+    <span class="card-cat" style="background:#EC489920;color:#EC4899">Claude Code</span>
+    <span class="card-id">Q40</span>
+  </div>
+  <div class="card-title">Non-developer employees complete a real project with Claude Code</div>
+  <div class="card-desc">3–5 noms documentés, output réel présenté en show & tell.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#059669"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.22 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q19" data-zone="p1" data-cat="people">
+  <div class="card-top">
+    <span class="card-cat" style="background:#10B98120;color:#10B981">Talent & Culture</span>
+    <span class="card-id">Q19</span>
+  </div>
+  <div class="card-title">Write Intégral talent profile document</div>
+  <div class="card-desc">Traits, compétences, comportements valorisés dans le nouveau modèle. Utilisé en RH.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#059669"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:67%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">6</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.11 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q26" data-zone="p1" data-cat="tools">
+  <div class="card-top">
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-id">Q26</span>
+  </div>
+  <div class="card-title">Launch monthly internal show & tell</div>
+  <div class="card-desc">1er demo d'ici fin Q2 2026. Invitation récurrente, rotation de présentateurs.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#059669"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.11 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q28" data-zone="p1" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q28</span>
+  </div>
+  <div class="card-title">Launch productized subscription offering</div>
+  <div class="card-desc">Page produit, prix fixe, 1 client payant, processus de livraison documenté.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.11 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q29" data-zone="p1" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q29</span>
+  </div>
+  <div class="card-title">Sign 3 new clients at $25K+/year</div>
+  <div class="card-desc">Contrats signés. Pas dans le pipeline — signés.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#059669"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:67%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">6</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.11 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q7" data-zone="p1" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q7</span>
+  </div>
+  <div class="card-title">Define the AI task force</div>
+  <div class="card-desc">Noms, heures/semaine, livrables Q3 2026. Publiés et signés.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#059669"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:78%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">7</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.00 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q20" data-zone="p1" data-cat="people">
+  <div class="card-top">
+    <span class="card-cat" style="background:#10B98120;color:#10B981">Talent & Culture</span>
+    <span class="card-id">Q20</span>
+  </div>
+  <div class="card-title">Company-wide AI readiness self-assessment</div>
+  <div class="card-desc">Complété par 90 %+ de l'équipe, top 3 lacunes identifiées.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.00 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q21" data-zone="p1" data-cat="people">
+  <div class="card-top">
+    <span class="card-cat" style="background:#10B98120;color:#10B981">Talent & Culture</span>
+    <span class="card-id">Q21</span>
+  </div>
+  <div class="card-title">Every leader reaches AI proficiency Level 3+</div>
+  <div class="card-desc">60 jours pour démontrer un workflow IA utilisé chaque semaine.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#059669"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.00 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q23" data-zone="p1" data-cat="tools">
+  <div class="card-top">
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-id">Q23</span>
+  </div>
+  <div class="card-title">Build shared workflow library</div>
+  <div class="card-desc">20+ workflows documentés, dont 2 Claude Code, 5+ contributeurs.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#059669"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 3.00 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+    <div class="drop-placeholder" id="drop-p1">Drop here</div>
+  </div>
+</div>
+    <div class="board-col" data-zone="p2">
+  <div class="col-header" style="background:#FFFBEB;border-bottom:2px solid #D97706">
+    <div class="col-header-left">
+      <span class="col-dot" style="background:#D97706"></span>
+      <span class="col-title" style="color:#D97706">Priority 2 — Plan Next</span>
+    </div>
+    <span class="col-count" style="background:#D9770620;color:#D97706" data-zone-count="p2">15</span>
+  </div>
+  <div class="col-body" id="zone-p2">
+    <div class="card" draggable="true" data-id="Q5" data-zone="p2" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q5</span>
+  </div>
+  <div class="card-title">Hire part-time senior AI expert</div>
+  <div class="card-desc">2–3 jours/semaine, guide les décisions techniques et accélère la construction.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.89 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q10" data-zone="p2" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q10</span>
+  </div>
+  <div class="card-title">Write proprietary skills files</div>
+  <div class="card-desc">5 fichiers (SEO, contenu, Google Ads, média, GEO) versionnés et testés.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.89 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q11" data-zone="p2" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q11</span>
+  </div>
+  <div class="card-title">Submit government funding application</div>
+  <div class="card-desc">SR&ED, CDAE, PARI, Scale AI. Objectif : 30–50 % des coûts R&D compensés.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.89 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q24" data-zone="p2" data-cat="tools">
+  <div class="card-top">
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-id">Q24</span>
+  </div>
+  <div class="card-title">Onboard every strategist on the Brain</div>
+  <div class="card-desc">30 jours après le lancement MVP. Formation structurée, suivi de complétion.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#059669"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:67%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">6</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.89 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q25" data-zone="p2" data-cat="tools">
+  <div class="card-top">
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-id">Q25</span>
+  </div>
+  <div class="card-title">Train one person per dept on advanced AI</div>
+  <div class="card-desc">Pas juste l'utilisation — construction de workflows sur mesure (Claude Code).</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.89 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q35" data-zone="p2" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q35</span>
+  </div>
+  <div class="card-title">Package a service as fixed-price subscription</div>
+  <div class="card-desc">Périmètre standardisé, 1 client existant migré vers le modèle.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.89 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q22" data-zone="p2" data-cat="tools">
+  <div class="card-top">
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-id">Q22</span>
+  </div>
+  <div class="card-title">Lock the official AI tool stack</div>
+  <div class="card-desc">5–7 outils max. Liste publiée, licences provisionnées, date de dépréciation fixée.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#059669"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.78 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q27" data-zone="p2" data-cat="tools">
+  <div class="card-top">
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-id">Q27</span>
+  </div>
+  <div class="card-title">Audit all AI tools and workflows in use</div>
+  <div class="card-desc">Qui utilise quoi, les meilleurs identifiés, le reste éliminé. Plan de consolidation approuvé.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.78 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q6" data-zone="p2" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q6</span>
+  </div>
+  <div class="card-title">Hire a dedicated data engineer</div>
+  <div class="card-desc">Pipelines propres, structurés, prêts pour l'IA. Premier pipeline livré en 30 jours.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#059669"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.67 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q31" data-zone="p2" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q31</span>
+  </div>
+  <div class="card-title">Approve 12-month AI investment plan</div>
+  <div class="card-desc">Montant engagé, reflété dans les projections financières.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.67 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q12" data-zone="p2" data-cat="people">
+  <div class="card-top">
+    <span class="card-cat" style="background:#10B98120;color:#10B981">Talent & Culture</span>
+    <span class="card-id">Q12</span>
+  </div>
+  <div class="card-title">AI proficiency in performance reviews</div>
+  <div class="card-desc">Section notée 1–5 dans chaque évaluation, dès le cycle Q3 2026.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#059669"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.56 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q16" data-zone="p2" data-cat="people">
+  <div class="card-top">
+    <span class="card-cat" style="background:#10B98120;color:#10B981">Talent & Culture</span>
+    <span class="card-id">Q16</span>
+  </div>
+  <div class="card-title">Personal AI development plan per employee</div>
+  <div class="card-desc">Adapté au rôle, outils spécifiques à apprendre, délais définis.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#059669"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.56 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q33" data-zone="p2" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q33</span>
+  </div>
+  <div class="card-title">Rebuild Digitad.ca</div>
+  <div class="card-desc">Nouveau site en ligne, positionnement IA reflété, ancien positionnement retiré.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#059669"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.56 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q36" data-zone="p2" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q36</span>
+  </div>
+  <div class="card-title">Build client-facing AI readiness tool</div>
+  <div class="card-desc">En ligne, partageable par lien, utilisé dans au moins 1 vente réelle.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#059669"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.56 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q39" data-zone="p2" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q39</span>
+  </div>
+  <div class="card-title">Select AI-powered pilot squad</div>
+  <div class="card-desc">3–5 personnes, 10–15 clients, comparaison perf 90 jours vs le reste.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#059669"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.56 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+    <div class="drop-placeholder" id="drop-p2">Drop here</div>
+  </div>
+</div>
+    <div class="board-col" data-zone="discuss">
+  <div class="col-header" style="background:#F0F0EF;border-bottom:2px solid #9CA3AF">
+    <div class="col-header-left">
+      <span class="col-dot" style="background:#5A6A78"></span>
+      <span class="col-title" style="color:#5A6A78">Discuss — Needs Alignment</span>
+    </div>
+    <span class="col-count" style="background:#5A6A7820;color:#5A6A78" data-zone-count="discuss">7</span>
+  </div>
+  <div class="col-body" id="zone-discuss">
+    <div class="card" draggable="true" data-id="Q8" data-zone="discuss" data-cat="tech">
+  <div class="card-top">
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-id">Q8</span>
+  </div>
+  <div class="card-title">Write data governance policy</div>
+  <div class="card-desc">Quelles données entrent dans le Brain, qui y accède, règles de rétention.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.44 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q17" data-zone="discuss" data-cat="people">
+  <div class="card-top">
+    <span class="card-cat" style="background:#10B98120;color:#10B981">Talent & Culture</span>
+    <span class="card-id">Q17</span>
+  </div>
+  <div class="card-title">Run AI Win of the Quarter competition</div>
+  <div class="card-desc">Soumissions, jugement, reconnaissance publique, récompense réelle.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#059669"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:56%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">5</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.44 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q18" data-zone="discuss" data-cat="people">
+  <div class="card-top">
+    <span class="card-cat" style="background:#10B98120;color:#10B981">Talent & Culture</span>
+    <span class="card-id">Q18</span>
+  </div>
+  <div class="card-title">Company-wide AI adoption review</div>
+  <div class="card-desc">Rapport avec métriques par département, actions identifiées par la direction.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#059669">ASAP</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#059669"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:67%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">6</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.44 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q14" data-zone="discuss" data-cat="people">
+  <div class="card-top">
+    <span class="card-cat" style="background:#10B98120;color:#10B981">Talent & Culture</span>
+    <span class="card-id">Q14</span>
+  </div>
+  <div class="card-title">Name AI champion per department</div>
+  <div class="card-desc">2 h/semaine dédiées à la formation des pairs. Sessions documentées.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:67%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">6</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.22 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q32" data-zone="discuss" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q32</span>
+  </div>
+  <div class="card-title">Drop bottom 10% least profitable clients</div>
+  <div class="card-desc">Liste identifiée, conversations de sortie faites, impact revenue quantifié.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.11 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q30" data-zone="discuss" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q30</span>
+  </div>
+  <div class="card-title">Run value-based pricing pilot</div>
+  <div class="card-desc">1 client sur un accord valeur/résultats, métriques définies, rapport mensuel.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:22%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">2</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.00 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+<div class="card" draggable="true" data-id="Q37" data-zone="discuss" data-cat="business">
+  <div class="card-top">
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-id">Q37</span>
+  </div>
+  <div class="card-title">Establish 2 formal strategic partnerships</div>
+  <div class="card-desc">Accords signés, termes définis, 1 initiative conjointe exécutée.</div>
+  <div class="card-votes"><div class="vote-row">
+          <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:33%;background:#2563EB"></div>
+          </div>
+          <span class="vote-count">3</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#7C3AED">6–12 mo</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:44%;background:#7C3AED"></div>
+          </div>
+          <span class="vote-count">4</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#D97706">2027+</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#D97706"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div><div class="vote-row">
+          <span class="vote-label" style="color:#DC2626">Won't do</span>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:11%;background:#DC2626"></div>
+          </div>
+          <span class="vote-count">1</span>
+        </div></div>
+  <div class="card-footer">
+    <span class="card-score">Score: 2.00 / 4</span>
+    <span class="card-total">9 votes</span>
+  </div>
+</div>
+    <div class="drop-placeholder" id="drop-discuss">Drop here</div>
+  </div>
+</div>
+    <div class="board-col" data-zone="kill">
+  <div class="col-header" style="background:#FEF2F2;border-bottom:2px solid #DC2626">
+    <div class="col-header-left">
+      <span class="col-dot" style="background:#DC2626"></span>
+      <span class="col-title" style="color:#DC2626">Kill — Remove from Roadmap</span>
+    </div>
+    <span class="col-count" style="background:#DC262620;color:#DC2626" data-zone-count="kill">0</span>
+  </div>
+  <div class="col-body" id="zone-kill">
+    
+    <div class="drop-placeholder" id="drop-kill">Drop here</div>
+  </div>
+</div>
+  </div>
+</main>
+
+<script>
+// ── Filter ──────────────────────────────────────────────────────
+let currentFilter = 'all';
+function filter(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.card').forEach(c => {
+    if (cat === 'all' || c.dataset.cat === cat) c.classList.remove('hidden');
+    else c.classList.add('hidden');
+  });
+  updateCounts();
+}
+
+// ── Methodology toggle ──────────────────────────────────────────
+function toggleMethod(btn) {
+  const body = document.getElementById('methodBody');
+  const arrow = btn.querySelector('.method-toggle-arrow');
+  const open = !body.classList.contains('hidden');
+  body.classList.toggle('hidden', open);
+  arrow.classList.toggle('open', !open);
+  btn.setAttribute('aria-expanded', String(!open));
+}
+
+// ── Count update ────────────────────────────────────────────────
+function updateCounts() {
+  ['p1','p2','discuss','kill'].forEach(zone => {
+    const col = document.getElementById('zone-' + zone);
+    const visible = col.querySelectorAll('.card:not(.hidden)').length;
+    const pill = document.getElementById('pill-' + zone);
+    const badge = document.querySelector('[data-zone-count="' + zone + '"]');
+    const labels = {p1:'P1 Do Now',p2:'P2 Plan Next',discuss:'Discuss',kill:'Kill'};
+    if (pill) pill.textContent = labels[zone] + ' · ' + visible;
+    if (badge) badge.textContent = visible;
+  });
+}
+
+// ── Drag & Drop ──────────────────────────────────────────────────
+let dragCard = null;
+
+function setupDrag() {
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      dragCard = card;
+      setTimeout(() => card.classList.add('dragging'), 0);
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', card.dataset.id);
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      document.querySelectorAll('.col-body').forEach(b => b.classList.remove('drag-active'));
+      document.querySelectorAll('.board-col').forEach(c => c.classList.remove('drag-over'));
+      dragCard = null;
+    });
+  });
+
+  document.querySelectorAll('.col-body').forEach(body => {
+    body.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    });
+    body.addEventListener('dragenter', e => {
+      e.preventDefault();
+      if (!dragCard) return;
+      body.classList.add('drag-active');
+      body.closest('.board-col').classList.add('drag-over');
+    });
+    body.addEventListener('dragleave', e => {
+      // Only remove if leaving the col-body element itself
+      if (!body.contains(e.relatedTarget)) {
+        body.classList.remove('drag-active');
+        body.closest('.board-col').classList.remove('drag-over');
+      }
+    });
+    body.addEventListener('drop', e => {
+      e.preventDefault();
+      body.classList.remove('drag-active');
+      body.closest('.board-col').classList.remove('drag-over');
+      if (!dragCard) return;
+      const targetZone = body.closest('.board-col').dataset.zone;
+      const sourceZone = dragCard.dataset.zone;
+      if (targetZone === sourceZone) return;
+      // Move card
+      const placeholder = body.querySelector('.drop-placeholder');
+      body.insertBefore(dragCard, placeholder);
+      dragCard.dataset.zone = targetZone;
+      // Mark as moved (unless it was moved back to original)
+      const origZone = dragCard.dataset.origZone || sourceZone;
+      if (!dragCard.dataset.origZone) dragCard.dataset.origZone = sourceZone;
+      dragCard.classList.toggle('moved', dragCard.dataset.zone !== origZone);
+      updateCounts();
+    });
+  });
+}
+
+// ── Reset ────────────────────────────────────────────────────────
+function resetBoard() {
+  const cards = Array.from(document.querySelectorAll('.card'));
+  // Sort by original zone then original order
+  const zones = ['p1','p2','discuss','kill'];
+  zones.forEach(zone => {
+    const body = document.getElementById('zone-' + zone);
+    const placeholder = body.querySelector('.drop-placeholder');
+    cards.filter(c => (c.dataset.origZone || c.dataset.zone) === zone)
+         .forEach(c => {
+           c.dataset.zone = c.dataset.origZone || zone;
+           delete c.dataset.origZone;
+           c.classList.remove('moved');
+           body.insertBefore(c, placeholder);
+         });
+  });
+  updateCounts();
+}
+
+// ── Init ─────────────────────────────────────────────────────────
+setupDrag();
+updateCounts();
+</script>
+</body>
+</html>
