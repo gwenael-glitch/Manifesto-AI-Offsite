@@ -253,12 +253,13 @@ h2 { font-size: clamp(1.4rem, 2.5vw, 1.75rem); letter-spacing: -0.025em; margin-
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
   padding: 2rem 4.5rem;
+  overflow-y: auto;
 }
 
 .slide.active {
@@ -269,6 +270,8 @@ h2 { font-size: clamp(1.4rem, 2.5vw, 1.75rem); letter-spacing: -0.025em; margin-
 .slide-inner {
   max-width: 820px;
   width: 100%;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 /* ============================================
@@ -2705,6 +2708,7 @@ h2 { font-size: clamp(1.4rem, 2.5vw, 1.75rem); letter-spacing: -0.025em; margin-
 .brain-detail-footer { font-size: var(--text-sm); color: var(--accent); font-weight: 600; margin-top: var(--space-sm); text-align: center; }
 
 /* Connector pulse animation */
+@keyframes hackPulse{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes dataPulse {
   0% { height: 0; opacity: 0; }
   50% { height: 20px; opacity: 1; }
@@ -6771,59 +6775,36 @@ if (wsEl) {
 
         <!-- ── LIVE VOTE ── -->
         <div class="htab-content" data-htab-content="vote">
-          <div class="hack-vote-wrap">
-            <div class="hack-vpick-grid">
-              <div class="hack-vpick-hcell"></div>
-              <div class="hack-vpick-hcell hack-vpick-tcol"><span class="hack-vote-tname" data-vote-team="0">Équipe 01</span></div>
-              <div class="hack-vpick-hcell hack-vpick-tcol"><span class="hack-vote-tname" data-vote-team="1">Équipe 02</span></div>
-              <div class="hack-vpick-hcell hack-vpick-tcol"><span class="hack-vote-tname" data-vote-team="2">Équipe 03</span></div>
-              
-              <div class="hack-vpick-crit">
-                <div class="hack-vpick-crit-name"><span class="en">IMPACT</span><span class="fr">IMPACT</span></div>
-                <div class="hack-vpick-crit-sub"><span class="en">Clarity &amp; power — does the concept land immediately?</span><span class="fr">Clarté &amp; puissance — le concept s'impose-t-il immédiatement ?</span></div>
+          <div style="display:grid;grid-template-columns:220px 1fr;gap:1.5rem;align-items:start;">
+
+            <!-- LEFT: QR + voter list -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:0.85rem;">
+              <div style="background:#fff;padding:10px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+                <img id="hack-qr-img" src="" alt="QR Code" style="width:160px;height:160px;display:block;border-radius:6px;">
               </div>
-              <button class="hack-vpick-btn" data-crit="0" data-team="0" onclick="pickWinner(0,0)">&#10003;</button>
-              <button class="hack-vpick-btn" data-crit="0" data-team="1" onclick="pickWinner(0,1)">&#10003;</button>
-              <button class="hack-vpick-btn" data-crit="0" data-team="2" onclick="pickWinner(0,2)">&#10003;</button>
-              <div class="hack-vpick-crit">
-                <div class="hack-vpick-crit-name"><span class="en">VISION</span><span class="fr">VISION</span></div>
-                <div class="hack-vpick-crit-sub"><span class="en">Durable, defensible &amp; future-proof — built to last.</span><span class="fr">Durable, défendable &amp; visionnaire — conçu pour durer.</span></div>
-              </div>
-              <button class="hack-vpick-btn" data-crit="1" data-team="0" onclick="pickWinner(1,0)">&#10003;</button>
-              <button class="hack-vpick-btn" data-crit="1" data-team="1" onclick="pickWinner(1,1)">&#10003;</button>
-              <button class="hack-vpick-btn" data-crit="1" data-team="2" onclick="pickWinner(1,2)">&#10003;</button>
-              <div class="hack-vpick-crit">
-                <div class="hack-vpick-crit-name"><span class="en">FIT</span><span class="fr">FIT</span></div>
-                <div class="hack-vpick-crit-sub"><span class="en">Aligned with our ICP &amp; Intégral's identity.</span><span class="fr">Aligné avec notre ICP &amp; l'identité d'Intégral.</span></div>
-              </div>
-              <button class="hack-vpick-btn" data-crit="2" data-team="0" onclick="pickWinner(2,0)">&#10003;</button>
-              <button class="hack-vpick-btn" data-crit="2" data-team="1" onclick="pickWinner(2,1)">&#10003;</button>
-              <button class="hack-vpick-btn" data-crit="2" data-team="2" onclick="pickWinner(2,2)">&#10003;</button>
-              <div class="hack-vpick-crit">
-                <div class="hack-vpick-crit-name"><span class="en">CRAFT</span><span class="fr">CRAFT</span></div>
-                <div class="hack-vpick-crit-sub"><span class="en">Aesthetic quality — does it look and feel like a real product?</span><span class="fr">Qualité esthétique — est-ce que ça ressemble à un vrai produit ?</span></div>
-              </div>
-              <button class="hack-vpick-btn" data-crit="3" data-team="0" onclick="pickWinner(3,0)">&#10003;</button>
-              <button class="hack-vpick-btn" data-crit="3" data-team="1" onclick="pickWinner(3,1)">&#10003;</button>
-              <button class="hack-vpick-btn" data-crit="3" data-team="2" onclick="pickWinner(3,2)">&#10003;</button>
-              <div class="hack-vpick-crit">
-                <div class="hack-vpick-crit-name"><span class="en">MASTERY</span><span class="fr">MAÎTRISE</span></div>
-                <div class="hack-vpick-crit-sub"><span class="en">Advanced AI use — MCPs, sub-agents, method &amp; skill depth.</span><span class="fr">Usage avancé de l'IA — MCPs, sub-agents, méthode &amp; profondeur technique.</span></div>
-              </div>
-              <button class="hack-vpick-btn" data-crit="4" data-team="0" onclick="pickWinner(4,0)">&#10003;</button>
-              <button class="hack-vpick-btn" data-crit="4" data-team="1" onclick="pickWinner(4,1)">&#10003;</button>
-              <button class="hack-vpick-btn" data-crit="4" data-team="2" onclick="pickWinner(4,2)">&#10003;</button>
-              <div class="hack-vpick-wins-label"><span class="en">Wins</span><span class="fr">Victoires</span></div>
-              <div class="hack-wins-cell" data-team="0">0</div>
-              <div class="hack-wins-cell" data-team="1">0</div>
-              <div class="hack-wins-cell" data-team="2">0</div>
+              <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);text-align:center;">Scan to vote</div>
+              <div id="hack-vote-url" style="font-size:0.58rem;color:var(--text-muted);text-align:center;word-break:break-all;line-height:1.4;"></div>
+              <div id="hack-voter-pills" style="display:flex;flex-wrap:wrap;gap:0.3rem;justify-content:center;"></div>
+              <button onclick="hackResetVotes()" style="margin-top:0.25rem;font-size:0.62rem;font-weight:600;font-family:inherit;padding:0.3rem 0.9rem;border-radius:999px;border:1.5px solid #fca5a5;background:none;color:#dc2626;cursor:pointer;">↺ Reset votes</button>
             </div>
-            <div class="hack-winner-announce" id="hack-winner-announce" style="display:none;">
-              <div class="hack-winner-icon">&#127942;</div>
-              <div class="hack-winner-label"><span class="en">Overall winner</span><span class="fr">Gagnant général</span></div>
-              <div class="hack-winner-name" id="hack-winner-name"></div>
+
+            <!-- RIGHT: Live scoreboard + criteria -->
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;">
+                <span style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);">Live Results</span>
+                <span id="hack-live-count" style="font-size:0.6rem;font-weight:600;padding:0.1rem 0.55rem;border-radius:999px;background:var(--bg-warm);color:var(--text-muted);">0 vote(s)</span>
+                <span style="width:7px;height:7px;border-radius:50%;background:#34d399;display:inline-block;animation:hackPulse 1.5s infinite;"></span>
+              </div>
+
+              <!-- Scoreboard bars -->
+              <div id="hack-live-scoreboard" style="display:flex;flex-direction:column;gap:0.55rem;">
+                <div style="font-size:0.75rem;color:var(--text-muted);opacity:0.6;">En attente des votes…</div>
+              </div>
+
+              <!-- Criteria mini breakdown -->
+              <div id="hack-live-criteria" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.25rem;"></div>
             </div>
-            <button class="hack-vote-reset" onclick="resetHackVotes()"><span class="en">Reset</span><span class="fr">Réinitialiser</span></button>
+
           </div>
         </div>
 
@@ -7051,11 +7032,134 @@ function filterDemo30(cat, btn) {
   });
 }
 
-function resetHackVotes() {
-  hackPicks={0:null,1:null,2:null,3:null,4:null};
-  document.querySelectorAll('.hack-vpick-btn').forEach(function(b){b.classList.remove('winner');});
-  document.querySelectorAll('.hack-wins-cell').forEach(function(el){el.textContent='0';el.classList.remove('top');});
-  var annEl=document.getElementById('hack-winner-announce'); if(annEl) annEl.style.display='none';
+function resetHackVotes() {} // legacy no-op
+
+/* ── HACKATHON LIVE VOTE ─────────────────────── */
+var hackVoteInterval = null;
+var hackVoteColors = ['#818CF8','#60A5FA','#34D399'];
+var hackVoteTeams  = ['Équipe 01','Équipe 02','Équipe 03'];
+var hackVoteCriteria = ['impact','vision','fit','craft','mastery'];
+var hackVoteCritLabels = ['IMPACT','VISION','FIT','CRAFT','MAÎTRISE'];
+
+function hackInitVote() {
+  // QR code — points to the vote page on same server
+  var origin = window.location.origin;
+  // If opened as file://, show placeholder
+  var voteUrl = origin.startsWith('http') ? origin : 'http://[IP]:3000';
+  var urlEl = document.getElementById('hack-vote-url');
+  if (urlEl) urlEl.textContent = voteUrl;
+  var qrImg = document.getElementById('hack-qr-img');
+  if (qrImg && origin.startsWith('http')) {
+    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?data=' + encodeURIComponent(voteUrl) + '&size=300x300&margin=4&color=111827';
+  } else if (qrImg) {
+    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?data=' + encodeURIComponent('http://[IP]:3000') + '&size=300x300&margin=4&color=111827';
+  }
+  // Start polling
+  if (!hackVoteInterval) {
+    hackPollVotes();
+    hackVoteInterval = setInterval(hackPollVotes, 2500);
+  }
+}
+
+async function hackPollVotes() {
+  try {
+    var res = await fetch('/votes');
+    var votes = await res.json();
+    hackRenderVote(votes);
+  } catch(e) {
+    var sb = document.getElementById('hack-live-scoreboard');
+    if (sb) sb.innerHTML = '<div style="font-size:0.72rem;color:var(--text-muted);opacity:0.6;">Lance <code>node vote-server.js</code> pour démarrer</div>';
+  }
+}
+
+function hackRenderVote(votes) {
+  var countEl = document.getElementById('hack-live-count');
+  if (countEl) countEl.textContent = votes.length + ' vote(s)';
+
+  // Voter pills
+  var pillsEl = document.getElementById('hack-voter-pills');
+  if (pillsEl) {
+    pillsEl.innerHTML = votes.map(function(v) {
+      return '<span style="font-size:0.58rem;font-weight:600;padding:0.15rem 0.5rem;border-radius:999px;background:var(--bg-warm);color:var(--text-dark);">' + v.voter + '</span>';
+    }).join('');
+  }
+
+  if (votes.length === 0) {
+    var sb = document.getElementById('hack-live-scoreboard');
+    if (sb) sb.innerHTML = '<div style="font-size:0.75rem;color:var(--text-muted);opacity:0.6;">En attente des votes…</div>';
+    var crit = document.getElementById('hack-live-criteria');
+    if (crit) crit.innerHTML = '';
+    return;
+  }
+
+  // Compute averages
+  var sums = hackVoteCriteria.map(function() { return hackVoteTeams.map(function(){return 0;}); });
+  var cnts = hackVoteCriteria.map(function() { return hackVoteTeams.map(function(){return 0;}); });
+  votes.forEach(function(v) {
+    hackVoteCriteria.forEach(function(key, ci) {
+      hackVoteTeams.forEach(function(_, ti) {
+        var s = v.scores && v.scores[key] && v.scores[key][ti];
+        if (s != null) { sums[ci][ti] += s; cnts[ci][ti]++; }
+      });
+    });
+  });
+  var avgs = sums.map(function(row, ci) {
+    return row.map(function(_, ti) { return cnts[ci][ti] > 0 ? sums[ci][ti] / cnts[ci][ti] : 0; });
+  });
+  var totals = hackVoteTeams.map(function(_, ti) {
+    return hackVoteCriteria.reduce(function(acc, _, ci) { return acc + avgs[ci][ti]; }, 0);
+  });
+  var maxTotal = Math.max.apply(null, totals.concat([0.01]));
+
+  // Scoreboard
+  var sorted = hackVoteTeams.map(function(name, i) { return {name:name, idx:i, total:totals[i], color:hackVoteColors[i]}; })
+    .sort(function(a, b) { return b.total - a.total; });
+
+  var sb = document.getElementById('hack-live-scoreboard');
+  if (sb) {
+    sb.innerHTML = sorted.map(function(t) {
+      var pct = (t.total / maxTotal * 100).toFixed(1);
+      var avg = (t.total / hackVoteCriteria.length).toFixed(2);
+      return '<div style="display:flex;align-items:center;gap:0.6rem;">' +
+        '<div style="width:22px;height:22px;border-radius:50%;background:' + t.color + '22;color:' + t.color + ';font-size:0.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + (t.idx+1) + '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-size:0.78rem;font-weight:700;">' + t.name + '</div>' +
+          '<div style="font-size:0.55rem;color:var(--text-muted);">Moy. ' + avg + '/5</div>' +
+        '</div>' +
+        '<div style="flex:1.5;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + t.color + ';border-radius:3px;transition:width 0.6s;"></div></div>' +
+        '<div style="font-size:0.85rem;font-weight:800;min-width:32px;text-align:right;color:' + t.color + ';">' + t.total.toFixed(1) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  // Criteria mini cards
+  var critEl = document.getElementById('hack-live-criteria');
+  if (critEl) {
+    critEl.innerHTML = hackVoteCriteria.map(function(key, ci) {
+      var maxAvg = Math.max.apply(null, avgs[ci].concat([0.01]));
+      var winner = avgs[ci].indexOf(Math.max.apply(null, avgs[ci]));
+      return '<div style="background:var(--bg-white);border:1px solid var(--border);border-radius:10px;padding:0.6rem 0.75rem;">' +
+        '<div style="font-size:0.55rem;font-weight:800;letter-spacing:0.1em;color:var(--accent);margin-bottom:0.4rem;">' + hackVoteCritLabels[ci] + '</div>' +
+        hackVoteTeams.map(function(tname, ti) {
+          var avg = avgs[ci][ti];
+          var pct = (avg / 5 * 100).toFixed(1);
+          return '<div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.25rem;">' +
+            '<div style="font-size:0.58rem;font-weight:700;min-width:58px;color:' + hackVoteColors[ti] + ';">' + tname + (ti === winner && avg > 0 ? ' ★' : '') + '</div>' +
+            '<div style="flex:1;height:4px;background:#e5e7eb;border-radius:2px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + hackVoteColors[ti] + ';border-radius:2px;transition:width 0.6s;"></div></div>' +
+            '<div style="font-size:0.6rem;font-weight:700;min-width:22px;text-align:right;color:' + hackVoteColors[ti] + ';">' + (avg > 0 ? avg.toFixed(1) : '—') + '</div>' +
+            '</div>';
+        }).join('') +
+        '</div>';
+    }).join('');
+  }
+}
+
+async function hackResetVotes() {
+  if (!confirm('Supprimer tous les votes ?')) return;
+  try {
+    await fetch('/votes', { method: 'DELETE' });
+    hackPollVotes();
+  } catch(e) {}
 }
 function editTeamName(idx) {
   var el=document.getElementById('team-name-'+idx); if(!el) return;
@@ -7095,6 +7199,7 @@ function switchHackTab(btn) {
   btn.classList.add('active');
   btn.closest('.slide-inner').querySelectorAll('.htab-content').forEach(function(c) { c.classList.remove('active'); });
   btn.closest('.slide-inner').querySelector('[data-htab-content="' + tab + '"]').classList.add('active');
+  if (tab === 'vote') hackInitVote();
 }
 
 /* Pipeline detail toggle */

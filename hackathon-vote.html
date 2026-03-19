@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Hackathon — Vote</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F6F5F3;--white:#fff;--dark:#111827;--muted:#6B7280;
+  --border:#E5E2DD;--accent:#6366F1;--accent-light:#EEF2FF;
+  --green:#059669;--green-light:#ECFDF5;
+  --font:'Plus Jakarta Sans',-apple-system,sans-serif;
+  --radius:14px;--radius-sm:10px;
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--dark);-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;min-height:100vh}
+
+/* ── SCREENS ─────────────────────────────────── */
+.screen{display:none;flex-direction:column;flex:1;padding:1.5rem 1.25rem;animation:fadeIn .25s ease}
+.screen.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── HEADER ──────────────────────────────────── */
+.logo{font-size:0.7rem;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:2rem}
+.screen-title{font-size:1.5rem;font-weight:800;line-height:1.2;margin-bottom:0.4rem}
+.screen-sub{font-size:0.85rem;color:var(--muted);line-height:1.5;margin-bottom:1.5rem}
+
+/* ── NAME INPUT ─────────────────────────────── */
+.name-input{width:100%;font-size:1.1rem;font-weight:600;font-family:var(--font);padding:0.9rem 1rem;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--white);color:var(--dark);outline:none;transition:border-color .15s}
+.name-input:focus{border-color:var(--accent)}
+.name-input::placeholder{color:#9CA3AF;font-weight:400}
+
+/* ── BUTTON ──────────────────────────────────── */
+.btn{width:100%;padding:0.95rem;font-size:0.95rem;font-weight:700;font-family:var(--font);border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--dark);color:#fff}
+.btn-primary:hover{background:#1f2937}
+.btn-primary:disabled{background:#9CA3AF;cursor:not-allowed}
+.btn-secondary{background:var(--white);color:var(--muted);border:1.5px solid var(--border);margin-top:0.6rem}
+
+/* ── PROGRESS ────────────────────────────────── */
+.progress-bar{height:4px;background:#E5E7EB;border-radius:2px;margin-bottom:1.75rem;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+.progress-label{font-size:0.68rem;font-weight:600;color:var(--muted);text-align:right;margin-top:0.35rem;letter-spacing:.04em}
+
+/* ── CRITERION CARD ──────────────────────────── */
+.crit-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;flex-shrink:0}
+.crit-keyword{font-size:0.7rem;font-weight:800;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;margin-bottom:0.2rem}
+.crit-desc{font-size:0.78rem;color:var(--muted);line-height:1.45;margin-bottom:1.1rem}
+.crit-teams{display:flex;flex-direction:column;gap:0.6rem}
+.team-row{display:flex;align-items:center;justify-content:space-between;gap:0.75rem}
+.team-name{font-size:0.8rem;font-weight:700;min-width:80px;flex-shrink:0}
+.stars{display:flex;gap:0.3rem}
+.star{font-size:1.35rem;cursor:pointer;transition:transform .1s;color:#D1D5DB;line-height:1;-webkit-tap-highlight-color:transparent}
+.star.active{color:#FBBF24}
+.star:active{transform:scale(1.3)}
+
+/* ── TEAM COLORS ─────────────────────────────── */
+.t0{color:#6366F1}
+.t1{color:#3B82F6}
+.t2{color:#10B981}
+
+/* ── SUBMIT AREA ─────────────────────────────── */
+.submit-area{margin-top:auto;padding-top:1.5rem}
+.vote-summary{font-size:0.72rem;color:var(--muted);text-align:center;margin-bottom:0.75rem}
+
+/* ── CONFIRMATION ────────────────────────────── */
+.confirm-icon{font-size:4rem;text-align:center;margin:2rem 0 1rem}
+.confirm-name{font-size:1.1rem;font-weight:700;text-align:center;color:var(--accent);margin-bottom:0.5rem}
+.confirm-msg{font-size:0.85rem;color:var(--muted);text-align:center;line-height:1.5}
+.voter-list{margin-top:1.5rem;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.voter-list-title{font-size:0.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:.7rem 1rem .4rem}
+.voter-item{display:flex;align-items:center;gap:0.5rem;padding:.5rem 1rem;border-top:1px solid var(--border);font-size:0.8rem;font-weight:600}
+.voter-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
+.voter-time{margin-left:auto;font-size:0.65rem;color:var(--muted);font-weight:400}
+</style>
+</head>
+<body>
+
+<!-- ══ SCREEN 1: NAME ══════════════════════════ -->
+<div class="screen active" id="screen-name">
+  <div class="logo">Intégral · Offsite 2026</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+    <div class="screen-title">Vote du jury</div>
+    <div class="screen-sub">Évalue chaque équipe sur 5 critères (1–5 étoiles). Ton vote est anonymisé.</div>
+    <input class="name-input" id="voter-name" type="text" placeholder="Ton prénom" maxlength="30" autocomplete="off">
+    <div style="height:1rem"></div>
+    <button class="btn btn-primary" id="btn-start" onclick="startVote()" disabled>Commencer →</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: VOTE ══════════════════════════ -->
+<div class="screen" id="screen-vote">
+  <div class="logo">Intégral · Hackathon</div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="progress-label" id="progress-label"></div>
+
+  <div id="crit-container" style="flex:1;overflow-y:auto;padding-bottom:1rem;"></div>
+
+  <div class="submit-area">
+    <div class="vote-summary" id="vote-summary"></div>
+    <button class="btn btn-primary" id="btn-submit" onclick="submitVote()">Soumettre mon vote</button>
+    <button class="btn btn-secondary" onclick="goBack()">← Retour</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: CONFIRM ════════════════════════ -->
+<div class="screen" id="screen-confirm">
+  <div class="logo">Intégral · Hackathon</div>
+  <div class="confirm-icon">✅</div>
+  <div class="confirm-name" id="confirm-name"></div>
+  <div class="confirm-msg">Ton vote a bien été enregistré.<br>Les résultats s'affichent en direct sur l'écran.</div>
+  <div class="voter-list">
+    <div class="voter-list-title">Votes reçus</div>
+    <div id="voter-list-body"></div>
+  </div>
+  <div style="margin-top:1.25rem">
+    <button class="btn btn-secondary" onclick="resetForNextVoter()">Voter pour quelqu'un d'autre</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ───────────────────────────────────────
+const TEAMS = [
+  { name: 'Équipe 01', members: 'Clara · Jessy · Inès · Marie · Florian', cls: 't0' },
+  { name: 'Équipe 02', members: 'Jérémie · Julia · Margaux · Cassandra', cls: 't1' },
+  { name: 'Équipe 03', members: 'Eva · Matthieu · Gwenaël · Linda · Thomas', cls: 't2' },
+];
+const CRITERIA = [
+  { key: 'impact',   label: 'IMPACT',   desc: 'Clarté & puissance — le concept s\'impose-t-il immédiatement ?' },
+  { key: 'vision',   label: 'VISION',   desc: 'Durable, défendable & visionnaire — conçu pour durer.' },
+  { key: 'fit',      label: 'FIT',      desc: 'Aligné avec notre ICP & l\'identité d\'Intégral.' },
+  { key: 'craft',    label: 'CRAFT',    desc: 'Qualité esthétique — est-ce que ça ressemble à un vrai produit ?' },
+  { key: 'mastery',  label: 'MAÎTRISE', desc: 'Usage avancé de l\'IA — MCPs, sub-agents, méthode & profondeur.' },
+];
+
+// scores[critIdx][teamIdx] = 1..5 | null
+let scores = CRITERIA.map(() => TEAMS.map(() => null));
+let voterName = '';
+
+// ── NAME SCREEN ───────────────────────────────
+document.getElementById('voter-name').addEventListener('input', function() {
+  document.getElementById('btn-start').disabled = this.value.trim().length < 2;
+});
+document.getElementById('voter-name').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && this.value.trim().length >= 2) startVote();
+});
+
+function startVote() {
+  voterName = document.getElementById('voter-name').value.trim();
+  scores = CRITERIA.map(() => TEAMS.map(() => null));
+  renderVote();
+  showScreen('screen-vote');
+}
+
+// ── VOTE SCREEN ───────────────────────────────
+function renderVote() {
+  const container = document.getElementById('crit-container');
+  container.innerHTML = '';
+  CRITERIA.forEach((crit, ci) => {
+    const card = document.createElement('div');
+    card.className = 'crit-card';
+    card.innerHTML = `
+      <div class="crit-keyword">${crit.label}</div>
+      <div class="crit-desc">${crit.desc}</div>
+      <div class="crit-teams">
+        ${TEAMS.map((team, ti) => `
+          <div class="team-row">
+            <div>
+              <div class="team-name ${team.cls}">${team.name}</div>
+              <div style="font-size:0.62rem;color:var(--muted);margin-top:1px;">${team.members}</div>
+            </div>
+            <div class="stars" data-ci="${ci}" data-ti="${ti}">
+              ${[1,2,3,4,5].map(s => `<span class="star${scores[ci][ti]>=s?' active':''}" data-v="${s}" onclick="setStar(${ci},${ti},${s})">★</span>`).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+    container.appendChild(card);
+  });
+  updateProgress();
+}
+
+function setStar(ci, ti, val) {
+  scores[ci][ti] = val;
+  // Update stars for this row
+  const group = document.querySelector(`.stars[data-ci="${ci}"][data-ti="${ti}"]`);
+  group.querySelectorAll('.star').forEach(s => {
+    s.classList.toggle('active', parseInt(s.dataset.v) <= val);
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = CRITERIA.length * TEAMS.length;
+  const filled = scores.flat().filter(v => v !== null).length;
+  const pct = Math.round(filled / total * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${filled} / ${total} critères remplis`;
+  document.getElementById('vote-summary').textContent = filled === total
+    ? '✓ Tout est rempli — prêt à soumettre' : `${total - filled} évaluation(s) manquante(s)`;
+  document.getElementById('btn-submit').disabled = filled < total;
+}
+
+function goBack() { showScreen('screen-name'); }
+
+// ── SUBMIT ─────────────────────────────────────
+async function submitVote() {
+  const payload = {
+    voter: voterName,
+    scores: {},
+  };
+  CRITERIA.forEach((crit, ci) => {
+    payload.scores[crit.key] = {};
+    TEAMS.forEach((team, ti) => {
+      payload.scores[crit.key][ti] = scores[ci][ti];
+    });
+  });
+
+  try {
+    const res = await fetch('/vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('Server error');
+    document.getElementById('confirm-name').textContent = voterName + ' — vote enregistré 🎉';
+    showScreen('screen-confirm');
+    pollVoters();
+  } catch(e) {
+    alert('Erreur de connexion. Assure-toi d\'être sur le bon réseau Wi-Fi.');
+  }
+}
+
+// ── CONFIRM SCREEN ─────────────────────────────
+async function pollVoters() {
+  try {
+    const res = await fetch('/votes');
+    const votes = await res.json();
+    const body = document.getElementById('voter-list-body');
+    body.innerHTML = votes.map(v => {
+      const t = new Date(v.timestamp);
+      const time = t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0');
+      return `<div class="voter-item"><div class="voter-dot"></div>${v.voter}<span class="voter-time">${time}</span></div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+function resetForNextVoter() {
+  document.getElementById('voter-name').value = '';
+  document.getElementById('btn-start').disabled = true;
+  showScreen('screen-name');
+}
+
+// ── UTILS ──────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>

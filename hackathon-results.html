@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hackathon — Résultats en direct</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f0f13;--card:#1a1a22;--border:#2a2a38;
+  --t0:#818CF8;--t1:#60A5FA;--t2:#34D399;
+  --accent:#818CF8;--muted:#6B7280;--white:#fff;
+  --font:'Plus Jakarta Sans',-apple-system,sans-serif;
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;overflow:hidden}
+body{display:grid;grid-template-rows:auto 1fr;padding:1.5rem 2rem;gap:1.25rem;height:100vh}
+
+/* ── HEADER ──────────────────────────────────── */
+header{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.header-left h1{font-size:1.1rem;font-weight:800;letter-spacing:-.02em}
+.header-left p{font-size:0.7rem;color:var(--muted);margin-top:.15rem}
+.header-right{display:flex;gap:.6rem;align-items:center}
+.voter-count{font-size:0.78rem;font-weight:700;background:#1a1a22;border:1.5px solid var(--border);border-radius:100px;padding:.3rem .85rem;color:var(--white)}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#34D399;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.reset-btn{font-size:0.68rem;font-weight:600;background:none;border:1.5px solid #3a2222;color:#DC2626;border-radius:100px;padding:.28rem .75rem;cursor:pointer;font-family:var(--font)}
+.reset-btn:hover{background:#3a2222}
+
+/* ── MAIN GRID ───────────────────────────────── */
+.main{display:grid;grid-template-columns:1fr 1.6fr;gap:1.25rem;min-height:0}
+
+/* ── LEFT: SCOREBOARD ────────────────────────── */
+.scoreboard{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:1.25rem;display:flex;flex-direction:column;gap:.75rem;overflow:hidden}
+.sb-title{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+.team-score-row{display:flex;align-items:center;gap:.75rem}
+.team-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0}
+.team-info{flex:1;min-width:0}
+.team-score-name{font-size:.85rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team-score-total{font-size:.62rem;color:var(--muted);margin-top:.05rem}
+.score-bar-wrap{flex:1;height:7px;background:#2a2a38;border-radius:4px;overflow:hidden}
+.score-bar{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.score-val{font-size:.9rem;font-weight:800;min-width:36px;text-align:right}
+.winner-banner{margin-top:auto;padding:.85rem 1rem;border-radius:12px;text-align:center;border:1.5px solid var(--border);background:#12121a;display:none}
+.winner-banner.show{display:block}
+.winner-crown{font-size:1.6rem;margin-bottom:.25rem}
+.winner-label{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.winner-team{font-size:1.3rem;font-weight:800;margin-top:.15rem}
+
+/* ── RIGHT: CRITERIA GRID ────────────────────── */
+.criteria-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:.75rem;min-height:0}
+.crit-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:1rem;display:flex;flex-direction:column;gap:.5rem;overflow:hidden}
+.crit-keyword{font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.crit-desc{font-size:.6rem;color:var(--muted);line-height:1.35;margin-bottom:.15rem}
+.crit-teams{display:flex;flex-direction:column;gap:.35rem;flex:1;justify-content:center}
+.crit-row{display:flex;align-items:center;gap:.5rem}
+.crit-team-name{font-size:.68rem;font-weight:700;min-width:72px;flex-shrink:0}
+.crit-bar-wrap{flex:1;height:5px;background:#2a2a38;border-radius:3px;overflow:hidden}
+.crit-bar{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.crit-score{font-size:.68rem;font-weight:700;min-width:26px;text-align:right}
+.crit-winner-badge{font-size:.52rem;font-weight:700;padding:.1rem .35rem;border-radius:100px;margin-left:.35rem;opacity:0;transition:opacity .3s}
+.crit-winner-badge.show{opacity:1}
+
+/* 5th card spans 2 columns */
+.crit-card:last-child{grid-column:1 / -1}
+
+/* ── EMPTY STATE ─────────────────────────────── */
+.empty{text-align:center;color:var(--muted);font-size:.85rem;padding:2rem;opacity:.6}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Hackathon · Résultats en direct <span class="live-dot"></span></h1>
+    <p>Intégral Offsite 2026 — Se met à jour automatiquement</p>
+  </div>
+  <div class="header-right">
+    <span class="voter-count" id="voter-count">0 vote(s)</span>
+    <button class="reset-btn" onclick="resetVotes()">↺ Reset</button>
+  </div>
+</header>
+
+<div class="main">
+  <!-- LEFT: scoreboard -->
+  <div class="scoreboard">
+    <div class="sb-title">Classement général</div>
+    <div id="scoreboard-body">
+      <div class="empty">En attente des votes…</div>
+    </div>
+    <div class="winner-banner" id="winner-banner">
+      <div class="winner-crown">🏆</div>
+      <div class="winner-label">Champion du hackathon</div>
+      <div class="winner-team" id="winner-team-name">—</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: criteria breakdown -->
+  <div class="criteria-grid" id="criteria-grid">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<script>
+const TEAMS = [
+  { name: 'Équipe 01', color: '#818CF8' },
+  { name: 'Équipe 02', color: '#60A5FA' },
+  { name: 'Équipe 03', color: '#34D399' },
+];
+const CRITERIA = [
+  { key: 'impact',  label: 'IMPACT',   desc: 'Clarté & puissance' },
+  { key: 'vision',  label: 'VISION',   desc: 'Durable, défendable & visionnaire' },
+  { key: 'fit',     label: 'FIT',      desc: 'Aligné ICP & Intégral' },
+  { key: 'craft',   label: 'CRAFT',    desc: 'Qualité esthétique' },
+  { key: 'mastery', label: 'MAÎTRISE', desc: 'Usage avancé IA / MCPs' },
+];
+
+// Build criteria cards (static structure, data filled by JS)
+const grid = document.getElementById('criteria-grid');
+CRITERIA.forEach((crit, ci) => {
+  const card = document.createElement('div');
+  card.className = 'crit-card';
+  card.innerHTML = `
+    <div class="crit-keyword">${crit.label}</div>
+    <div class="crit-desc">${crit.desc}</div>
+    <div class="crit-teams" id="crit-teams-${ci}">
+      ${TEAMS.map((t, ti) => `
+        <div class="crit-row">
+          <div class="crit-team-name" style="color:${t.color}">${t.name}</div>
+          <div class="crit-bar-wrap"><div class="crit-bar" id="cbar-${ci}-${ti}" style="background:${t.color};width:0%"></div></div>
+          <div class="crit-score" id="cscore-${ci}-${ti}">—</div>
+          <div class="crit-winner-badge" id="cwinner-${ci}-${ti}" style="background:${t.color}22;color:${t.color}">★</div>
+        </div>`).join('')}
+    </div>`;
+  grid.appendChild(card);
+});
+
+// ── POLL ─────────────────────────────────────────
+let lastCount = -1;
+
+async function poll() {
+  try {
+    const res = await fetch('/votes');
+    const votes = await res.json();
+    if (votes.length !== lastCount) {
+      lastCount = votes.length;
+      render(votes);
+    }
+  } catch(e) {}
+}
+
+function render(votes) {
+  document.getElementById('voter-count').textContent = `${votes.length} vote(s)`;
+
+  if (votes.length === 0) {
+    document.getElementById('scoreboard-body').innerHTML = '<div class="empty">En attente des votes…</div>';
+    CRITERIA.forEach((_, ci) => TEAMS.forEach((_, ti) => {
+      document.getElementById(`cbar-${ci}-${ti}`).style.width = '0%';
+      document.getElementById(`cscore-${ci}-${ti}`).textContent = '—';
+      document.getElementById(`cwinner-${ci}-${ti}`).classList.remove('show');
+    }));
+    document.getElementById('winner-banner').classList.remove('show');
+    return;
+  }
+
+  // Compute averages per crit per team
+  const sums = CRITERIA.map(() => TEAMS.map(() => 0));
+  const counts = CRITERIA.map(() => TEAMS.map(() => 0));
+  votes.forEach(v => {
+    CRITERIA.forEach((crit, ci) => {
+      TEAMS.forEach((_, ti) => {
+        const s = v.scores?.[crit.key]?.[ti];
+        if (s != null) { sums[ci][ti] += s; counts[ci][ti]++; }
+      });
+    });
+  });
+  const avgs = CRITERIA.map((_, ci) => TEAMS.map((_, ti) =>
+    counts[ci][ti] > 0 ? sums[ci][ti] / counts[ci][ti] : 0
+  ));
+
+  // Totals per team
+  const totals = TEAMS.map((_, ti) => CRITERIA.reduce((acc, _, ci) => acc + avgs[ci][ti], 0));
+  const maxTotal = Math.max(...totals, 0.01);
+
+  // Render scoreboard
+  const sorted = TEAMS.map((t, i) => ({ ...t, idx: i, total: totals[i] }))
+    .sort((a, b) => b.total - a.total);
+  document.getElementById('scoreboard-body').innerHTML = sorted.map(t => {
+    const pct = (t.total / maxTotal * 100).toFixed(1);
+    const avg = (t.total / CRITERIA.length).toFixed(2);
+    return `<div class="team-score-row">
+      <div class="team-num" style="background:${t.color}22;color:${t.color}">${t.idx + 1}</div>
+      <div class="team-info">
+        <div class="team-score-name">${t.name}</div>
+        <div class="team-score-total">Moy. ${avg}/5 sur ${CRITERIA.length} critères</div>
+      </div>
+      <div class="score-bar-wrap"><div class="score-bar" style="width:${pct}%;background:${t.color}"></div></div>
+      <div class="score-val" style="color:${t.color}">${t.total.toFixed(1)}</div>
+    </div>`;
+  }).join('');
+
+  // Winner banner
+  const winner = sorted[0];
+  const isDecisive = votes.length >= 3 && (winner.total - sorted[1].total) > 0.5;
+  document.getElementById('winner-banner').classList.toggle('show', isDecisive);
+  document.getElementById('winner-team-name').textContent = winner.name;
+  document.getElementById('winner-team-name').style.color = winner.color;
+
+  // Render criteria bars
+  CRITERIA.forEach((crit, ci) => {
+    const maxAvg = Math.max(...TEAMS.map((_, ti) => avgs[ci][ti]), 0.01);
+    const critWinner = avgs[ci].indexOf(Math.max(...avgs[ci]));
+    TEAMS.forEach((_, ti) => {
+      const avg = avgs[ci][ti];
+      const pct = (avg / 5 * 100).toFixed(1);
+      document.getElementById(`cbar-${ci}-${ti}`).style.width = pct + '%';
+      document.getElementById(`cscore-${ci}-${ti}`).textContent = avg > 0 ? avg.toFixed(1) : '—';
+      document.getElementById(`cwinner-${ci}-${ti}`).classList.toggle('show', ti === critWinner && avg > 0);
+    });
+  });
+}
+
+async function resetVotes() {
+  if (!confirm('Supprimer tous les votes ?')) return;
+  await fetch('/votes', { method: 'DELETE' });
+  lastCount = -1;
+  poll();
+}
+
+poll();
+setInterval(poll, 2000);
+</script>
+</body>
+</html>
