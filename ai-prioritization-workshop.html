@@ -71,7 +71,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
   background:rgba(246,245,243,0.97);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border);padding:0.6rem 2rem;
   display:flex;gap:0.35rem;flex-wrap:wrap;align-items:center;
-  position:sticky;top:57px;z-index:150
+  position:sticky;top:0;z-index:150
 }
 .filter-btn{
   font-size:0.7rem;font-weight:600;padding:0.3rem 0.75rem;border-radius:var(--radius-pill);
@@ -165,21 +165,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </head>
 <body>
 
-<!-- ── HEADER ──────────────────────────────────────────────── -->
-<header class="page-header">
-  <div class="header-left">
-    <h1>Intégral · AI Transformation — Prioritization Workshop</h1>
-    <p>9 respondents · 42 initiatives · Cards are draggable — move them between columns in real time</p>
-  </div>
-  <div class="header-summary">
-    <span class="summary-pill sp-p1" id="pill-p1">P1 Do Now · 20</span>
-    <span class="summary-pill sp-p2" id="pill-p2">P2 Plan Next · 15</span>
-    <span class="summary-pill sp-discuss" id="pill-discuss">Discuss · 7</span>
-    <span class="summary-pill sp-kill" id="pill-kill">Kill · 0</span>
-    <button class="reset-btn" id="resetBtn" onclick="resetBoard()">↺ Reset</button>
-  </div>
-</header>
-
 <!-- ── METHODOLOGY ─────────────────────────────────────────── -->
 <section class="methodology">
   <button class="method-toggle" onclick="toggleMethod(this)" aria-expanded="false">
@@ -240,6 +225,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
   <button class="filter-btn" onclick="filter('business', this)"><span class="filter-dot" style="background:#A855F7"></span>Business Vision &amp; Model</button>
   <button class="filter-btn" onclick="filter('claude', this)"><span class="filter-dot" style="background:#EC4899"></span>Claude Code</button>
   <span class="filter-hint"><span class="drag-icon">⠿</span> Drag cards between columns</span>
+  <button class="reset-btn" id="resetBtn" onclick="resetBoard()">↺ Reset</button>
 </nav>
 
 <!-- ── BOARD ──────────────────────────────────────────────────── -->
@@ -256,11 +242,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
   <div class="col-body" id="zone-p1">
     <div class="card" draggable="true" data-id="Q2" data-zone="p1" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q2</span>
   </div>
   <div class="card-title">Connect top 5 data sources</div>
-  <div class="card-desc">Google Ads, Search Console, GA4, CRM, ClickUp — une couche de données unifiée.</div>
+  <div class="card-desc">Google Ads, Search Console, GA4, CRM, ClickUp — one unified data layer.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -285,7 +271,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q42</span>
   </div>
   <div class="card-title">Designate internal Claude Code lead</div>
-  <div class="card-desc">Mandat 90 jours : former 5 collègues, documenter 3 workflows, présenter à la direction.</div>
+  <div class="card-desc">90-day mandate: train 5 colleagues, document 3 workflows, present to leadership.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -306,11 +292,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q4" data-zone="p1" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q4</span>
   </div>
   <div class="card-title">Name the AI technical owner</div>
-  <div class="card-desc">Mandat écrit, KPIs définis, redevabilité directe à la direction.</div>
+  <div class="card-desc">Written mandate, defined KPIs, direct accountability to leadership.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -335,7 +321,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q13</span>
   </div>
   <div class="card-title">AI proficiency required for all new hires</div>
-  <div class="card-desc">Étape d'évaluation IA dans le processus. Aucune exception, peu importe le rôle.</div>
+  <div class="card-desc">AI evaluation step in every hiring process. No exceptions, regardless of role.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -362,11 +348,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q34" data-zone="p1" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q34</span>
   </div>
   <div class="card-title">Host monthly Marketing × AI events</div>
-  <div class="card-desc">1er événement organisé, 3 prochains mois planifiés, format documenté.</div>
+  <div class="card-desc">First event organized, next 3 months planned, format documented.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -397,7 +383,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q41</span>
   </div>
   <div class="card-title">Document 5 Claude Code use cases</div>
-  <div class="card-desc">Un par domaine (SEO, contenu, Ads, reporting, ops) dans la bibliothèque.</div>
+  <div class="card-desc">One per domain (SEO, content, Ads, reporting, ops) in the shared library.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -424,11 +410,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q1" data-zone="p1" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q1</span>
   </div>
   <div class="card-title">Deploy Brain on a real client</div>
-  <div class="card-desc">Pas une démo — un prototype fonctionnel qui génère de vrais livrables.</div>
+  <div class="card-desc">Not a demo — a working prototype that generates real deliverables.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -455,11 +441,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q9" data-zone="p1" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q9</span>
   </div>
   <div class="card-title">Set monthly AI infrastructure budget</div>
-  <div class="card-desc">Ligne budgétaire distincte, plafond approuvé par la direction.</div>
+  <div class="card-desc">Separate budget line, cap approved by leadership.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -484,7 +470,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q15</span>
   </div>
   <div class="card-title">Add AI question to every performance review</div>
-  <div class="card-desc">«Quel workflow IA as-tu construit ce trimestre et quel est le résultat mesurable?»</div>
+  <div class="card-desc">"What AI workflow did you build this quarter and what is the measurable result?"</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -511,11 +497,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q3" data-zone="p1" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q3</span>
   </div>
   <div class="card-title">Audit & consolidate all workflows</div>
-  <div class="card-desc">Un espace partagé documenté. Automations dispersées archivées ou supprimées.</div>
+  <div class="card-desc">One shared documented space. Scattered automations archived or removed.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -542,11 +528,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q38" data-zone="p1" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q38</span>
   </div>
   <div class="card-title">Publish new Intégral positioning</div>
-  <div class="card-desc">Document existant, chaque employé l'a lu, reflété sur le site et les decks.</div>
+  <div class="card-desc">Document exists, every employee has read it, reflected on website and decks.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -577,7 +563,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q40</span>
   </div>
   <div class="card-title">Non-developer employees complete a real project with Claude Code</div>
-  <div class="card-desc">3–5 noms documentés, output réel présenté en show & tell.</div>
+  <div class="card-desc">3–5 names documented, real output presented at show & tell.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -614,7 +600,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q19</span>
   </div>
   <div class="card-title">Write Intégral talent profile document</div>
-  <div class="card-desc">Traits, compétences, comportements valorisés dans le nouveau modèle. Utilisé en RH.</div>
+  <div class="card-desc">Traits, skills, behaviors valued in the new model. Used in HR.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -641,11 +627,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q26" data-zone="p1" data-cat="tools">
   <div class="card-top">
-    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Competencies</span>
     <span class="card-id">Q26</span>
   </div>
   <div class="card-title">Launch monthly internal show & tell</div>
-  <div class="card-desc">1er demo d'ici fin Q2 2026. Invitation récurrente, rotation de présentateurs.</div>
+  <div class="card-desc">First demo by end of Q2 2026. Recurring invite, rotating presenters.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -672,11 +658,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q28" data-zone="p1" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q28</span>
   </div>
   <div class="card-title">Launch productized subscription offering</div>
-  <div class="card-desc">Page produit, prix fixe, 1 client payant, processus de livraison documenté.</div>
+  <div class="card-desc">Product page, fixed price, 1 paying client, delivery process documented.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -703,11 +689,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q29" data-zone="p1" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q29</span>
   </div>
   <div class="card-title">Sign 3 new clients at $25K+/year</div>
-  <div class="card-desc">Contrats signés. Pas dans le pipeline — signés.</div>
+  <div class="card-desc">Signed contracts. Not in the pipeline — signed.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -734,11 +720,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q7" data-zone="p1" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q7</span>
   </div>
   <div class="card-title">Define the AI task force</div>
-  <div class="card-desc">Noms, heures/semaine, livrables Q3 2026. Publiés et signés.</div>
+  <div class="card-desc">Names, hours/week, Q3 2026 deliverables. Published and signed off.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -769,7 +755,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q20</span>
   </div>
   <div class="card-title">Company-wide AI readiness self-assessment</div>
-  <div class="card-desc">Complété par 90 %+ de l'équipe, top 3 lacunes identifiées.</div>
+  <div class="card-desc">Completed by 90%+ of the team, top 3 gaps identified.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -806,7 +792,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q21</span>
   </div>
   <div class="card-title">Every leader reaches AI proficiency Level 3+</div>
-  <div class="card-desc">60 jours pour démontrer un workflow IA utilisé chaque semaine.</div>
+  <div class="card-desc">60 days to demonstrate an AI workflow used every week.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -839,11 +825,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q23" data-zone="p1" data-cat="tools">
   <div class="card-top">
-    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Competencies</span>
     <span class="card-id">Q23</span>
   </div>
   <div class="card-title">Build shared workflow library</div>
-  <div class="card-desc">20+ workflows documentés, dont 2 Claude Code, 5+ contributeurs.</div>
+  <div class="card-desc">20+ workflows documented, including 2 Claude Code, 5+ contributors.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -882,11 +868,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
   <div class="col-body" id="zone-p2">
     <div class="card" draggable="true" data-id="Q5" data-zone="p2" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q5</span>
   </div>
   <div class="card-title">Hire part-time senior AI expert</div>
-  <div class="card-desc">2–3 jours/semaine, guide les décisions techniques et accélère la construction.</div>
+  <div class="card-desc">2–3 days/week, guides technical decisions and accelerates the build.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -919,11 +905,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q10" data-zone="p2" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q10</span>
   </div>
   <div class="card-title">Write proprietary skills files</div>
-  <div class="card-desc">5 fichiers (SEO, contenu, Google Ads, média, GEO) versionnés et testés.</div>
+  <div class="card-desc">5 files (SEO, content, Google Ads, media, GEO) versioned and tested.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -956,11 +942,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q11" data-zone="p2" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q11</span>
   </div>
   <div class="card-title">Submit government funding application</div>
-  <div class="card-desc">SR&ED, CDAE, PARI, Scale AI. Objectif : 30–50 % des coûts R&D compensés.</div>
+  <div class="card-desc">SR&ED, CDAE, PARI, Scale AI. Target: 30–50% of R&D costs covered.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -987,11 +973,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q24" data-zone="p2" data-cat="tools">
   <div class="card-top">
-    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Competencies</span>
     <span class="card-id">Q24</span>
   </div>
   <div class="card-title">Onboard every strategist on the Brain</div>
-  <div class="card-desc">30 jours après le lancement MVP. Formation structurée, suivi de complétion.</div>
+  <div class="card-desc">30 days post-MVP launch. Structured training, completion tracked.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1018,11 +1004,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q25" data-zone="p2" data-cat="tools">
   <div class="card-top">
-    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Competencies</span>
     <span class="card-id">Q25</span>
   </div>
   <div class="card-title">Train one person per dept on advanced AI</div>
-  <div class="card-desc">Pas juste l'utilisation — construction de workflows sur mesure (Claude Code).</div>
+  <div class="card-desc">Not just using tools — building custom workflows with Claude Code.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1049,11 +1035,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q35" data-zone="p2" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q35</span>
   </div>
   <div class="card-title">Package a service as fixed-price subscription</div>
-  <div class="card-desc">Périmètre standardisé, 1 client existant migré vers le modèle.</div>
+  <div class="card-desc">Standardized scope, 1 existing client migrated to the model.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1086,11 +1072,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q22" data-zone="p2" data-cat="tools">
   <div class="card-top">
-    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Competencies</span>
     <span class="card-id">Q22</span>
   </div>
   <div class="card-title">Lock the official AI tool stack</div>
-  <div class="card-desc">5–7 outils max. Liste publiée, licences provisionnées, date de dépréciation fixée.</div>
+  <div class="card-desc">5–7 tools max. List published, licences provisioned, deprecation date set.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1123,11 +1109,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q27" data-zone="p2" data-cat="tools">
   <div class="card-top">
-    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Workflows</span>
+    <span class="card-cat" style="background:#F59E0B20;color:#F59E0B">Tools & Competencies</span>
     <span class="card-id">Q27</span>
   </div>
   <div class="card-title">Audit all AI tools and workflows in use</div>
-  <div class="card-desc">Qui utilise quoi, les meilleurs identifiés, le reste éliminé. Plan de consolidation approuvé.</div>
+  <div class="card-desc">Who uses what, best ones identified, the rest eliminated. Consolidation plan approved.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1160,11 +1146,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q6" data-zone="p2" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q6</span>
   </div>
   <div class="card-title">Hire a dedicated data engineer</div>
-  <div class="card-desc">Pipelines propres, structurés, prêts pour l'IA. Premier pipeline livré en 30 jours.</div>
+  <div class="card-desc">Clean, structured, AI-ready pipelines. First pipeline delivered within 30 days.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1197,11 +1183,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q31" data-zone="p2" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q31</span>
   </div>
   <div class="card-title">Approve 12-month AI investment plan</div>
-  <div class="card-desc">Montant engagé, reflété dans les projections financières.</div>
+  <div class="card-desc">Amount committed, reflected in financial projections.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1238,7 +1224,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q12</span>
   </div>
   <div class="card-title">AI proficiency in performance reviews</div>
-  <div class="card-desc">Section notée 1–5 dans chaque évaluation, dès le cycle Q3 2026.</div>
+  <div class="card-desc">Scored 1–5 in every review, starting from the Q3 2026 cycle.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1275,7 +1261,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q16</span>
   </div>
   <div class="card-title">Personal AI development plan per employee</div>
-  <div class="card-desc">Adapté au rôle, outils spécifiques à apprendre, délais définis.</div>
+  <div class="card-desc">Role-specific, tools to learn defined, deadlines set.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1314,11 +1300,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q33" data-zone="p2" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q33</span>
   </div>
   <div class="card-title">Rebuild Digitad.ca</div>
-  <div class="card-desc">Nouveau site en ligne, positionnement IA reflété, ancien positionnement retiré.</div>
+  <div class="card-desc">New website live, AI positioning reflected, old positioning removed.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1351,11 +1337,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q36" data-zone="p2" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q36</span>
   </div>
   <div class="card-title">Build client-facing AI readiness tool</div>
-  <div class="card-desc">En ligne, partageable par lien, utilisé dans au moins 1 vente réelle.</div>
+  <div class="card-desc">Online, shareable by link, used in at least 1 real sale.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1388,11 +1374,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q39" data-zone="p2" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q39</span>
   </div>
   <div class="card-title">Select AI-powered pilot squad</div>
-  <div class="card-desc">3–5 personnes, 10–15 clients, comparaison perf 90 jours vs le reste.</div>
+  <div class="card-desc">3–5 people, 10–15 clients, 90-day perf comparison vs. the rest.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1437,11 +1423,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
   <div class="col-body" id="zone-discuss">
     <div class="card" draggable="true" data-id="Q8" data-zone="discuss" data-cat="tech">
   <div class="card-top">
-    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Tech</span>
+    <span class="card-cat" style="background:#3B82F620;color:#3B82F6">Infrastructure & Data</span>
     <span class="card-id">Q8</span>
   </div>
   <div class="card-title">Write data governance policy</div>
-  <div class="card-desc">Quelles données entrent dans le Brain, qui y accède, règles de rétention.</div>
+  <div class="card-desc">Which data goes into the Brain, who accesses it, retention rules.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
           <div class="vote-bar-wrap">
@@ -1466,7 +1452,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q17</span>
   </div>
   <div class="card-title">Run AI Win of the Quarter competition</div>
-  <div class="card-desc">Soumissions, jugement, reconnaissance publique, récompense réelle.</div>
+  <div class="card-desc">Submissions, judging, public recognition, real reward.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1509,7 +1495,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q18</span>
   </div>
   <div class="card-title">Company-wide AI adoption review</div>
-  <div class="card-desc">Rapport avec métriques par département, actions identifiées par la direction.</div>
+  <div class="card-desc">Report with metrics by department, actions identified by leadership.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#059669">ASAP</span>
           <div class="vote-bar-wrap">
@@ -1540,7 +1526,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     <span class="card-id">Q14</span>
   </div>
   <div class="card-title">Name AI champion per department</div>
-  <div class="card-desc">2 h/semaine dédiées à la formation des pairs. Sessions documentées.</div>
+  <div class="card-desc">2 hrs/week dedicated to peer training. Sessions documented.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
           <div class="vote-bar-wrap">
@@ -1567,11 +1553,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q32" data-zone="discuss" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q32</span>
   </div>
   <div class="card-title">Drop bottom 10% least profitable clients</div>
-  <div class="card-desc">Liste identifiée, conversations de sortie faites, impact revenue quantifié.</div>
+  <div class="card-desc">List identified, exit conversations done, revenue impact quantified.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
           <div class="vote-bar-wrap">
@@ -1598,11 +1584,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q30" data-zone="discuss" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q30</span>
   </div>
   <div class="card-title">Run value-based pricing pilot</div>
-  <div class="card-desc">1 client sur un accord valeur/résultats, métriques définies, rapport mensuel.</div>
+  <div class="card-desc">1 client on a value/outcomes agreement, metrics defined, monthly report.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
           <div class="vote-bar-wrap">
@@ -1629,11 +1615,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="card" draggable="true" data-id="Q37" data-zone="discuss" data-cat="business">
   <div class="card-top">
-    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business & Revenue</span>
+    <span class="card-cat" style="background:#A855F720;color:#A855F7">Business Vision & Model</span>
     <span class="card-id">Q37</span>
   </div>
   <div class="card-title">Establish 2 formal strategic partnerships</div>
-  <div class="card-desc">Accords signés, termes définis, 1 initiative conjointe exécutée.</div>
+  <div class="card-desc">Agreements signed, terms defined, 1 joint initiative executed.</div>
   <div class="card-votes"><div class="vote-row">
           <span class="vote-label" style="color:#2563EB">Next 6 mo</span>
           <div class="vote-bar-wrap">
